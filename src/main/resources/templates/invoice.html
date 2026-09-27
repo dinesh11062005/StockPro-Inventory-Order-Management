@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+
+<html lang="en"
+
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Invoice | StockPro</title>
+
+    <link rel="stylesheet"
+
+          th:href="@{/css/style.css}">
+
+    <style>
+
+        /* =====================================================
+
+           INVOICE PAGE
+
+        ===================================================== */
+
+        .invoice-page {
+
+            width: 100%;
+
+        }
+
+        /* =====================================================
+
+           TOP ACTIONS
+
+        ===================================================== */
+
+        .invoice-actions {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+        }
+
+        .invoice-action {
+
+            height: 36px;
+
+            padding: 0 15px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border: none;
+
+            border-radius: 7px;
+
+            font-family: inherit;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+        }
+
+        .invoice-back {
+
+            background: #eef2f7;
+
+            color: #40536b;
+
+        }
+
+        .invoice-back:hover {
+
+            background: #e1e7ef;
+
+        }
+
+        .invoice-print {
+
+            background: #1677e8;
+
+            color: #ffffff;
+
+        }
+
+        .invoice-print:hover {
+
+            background: #075bb5;
+
+        }
+
+        /* =====================================================
+
+           INVOICE DOCUMENT
+
+        ===================================================== */
+
+        .invoice-document {
+
+            max-width: 1050px;
+
+            margin: 0 auto;
+
+            background: #ffffff;
+
+            border: 1px solid #e4eaf1;
+
+            border-radius: 10px;
+
+            box-shadow: 0 3px 12px rgba(23, 43, 77, 0.05);
+
+            overflow: hidden;
+
+        }
+
+        .invoice-inner {
+
+            padding: 40px;
+
+        }
+
+        /* =====================================================
+
+           INVOICE HEADER
+
+        ===================================================== */
+
+        .invoice-header {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            justify-content: space-between;
+
+            gap: 30px;
+
+            padding-bottom: 28px;
+
+            border-bottom: 2px solid #1677e8;
+
+        }
+
+        .invoice-brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+        }
+
+		.invoice-logo {
+
+		    width: 180px;
+
+		    height: 85px;
+
+		    object-fit: contain;
+
+		}
+
+        .invoice-company-name {
+
+            color: #172b4d;
+
+            font-size: 22px;
+
+            font-weight: 800;
+
+        }
+
+        .invoice-company-description {
+
+            margin-top: 4px;
+
+            color: #718096;
+
+            font-size: 10px;
+
+        }
+
+        .invoice-title-area {
+
+            text-align: right;
+
+        }
+
+        .invoice-title {
+
+            margin: 0;
+
+            color: #172b4d;
+
+            font-size: 30px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+        }
+
+        .invoice-number {
+
+            margin-top: 6px;
+
+            color: #1677e8;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+        }
+
+        /* =====================================================
+
+           INVOICE INFORMATION
+
+        ===================================================== */
+
+        .invoice-info {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 50px;
+
+            padding: 30px 0;
+
+        }
+
+        .invoice-info-section {
+
+            min-width: 0;
+
+        }
+
+        .invoice-info-heading {
+
+            margin-bottom: 12px;
+
+            color: #718096;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            letter-spacing: 0.5px;
+
+            text-transform: uppercase;
+
+        }
+
+        .invoice-customer-name {
+
+            color: #172b4d;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+        }
+
+        .invoice-info-text {
+
+            margin-top: 5px;
+
+            color: #64748b;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+
+        }
+
+        .invoice-meta {
+
+            display: grid;
+
+            grid-template-columns: 120px 1fr;
+
+            gap: 8px 15px;
+
+        }
+
+        .invoice-meta-label {
+
+            color: #718096;
+
+            font-size: 10px;
+
+        }
+
+        .invoice-meta-value {
+
+            color: #344563;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+        }
+
+        /* =====================================================
+
+           STATUS
+
+        ===================================================== */
+
+        .invoice-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            min-height: 24px;
+
+            padding: 0 9px;
+
+            border-radius: 20px;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+        }
+
+        .invoice-status-pending {
+
+            background: #fff6df;
+
+            color: #a66b00;
+
+        }
+
+        .invoice-status-completed {
+
+            background: #e9f8ef;
+
+            color: #21844a;
+
+        }
+
+        .invoice-status-cancelled {
+
+            background: #fff0f0;
+
+            color: #c43d3d;
+
+        }
+
+        .invoice-status-default {
+
+            background: #eef2f7;
+
+            color: #64748b;
+
+        }
+
+        /* =====================================================
+
+           ITEMS TABLE
+
+        ===================================================== */
+
+        .invoice-items-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
+        .invoice-items {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+        }
+
+        .invoice-items th {
+
+            height: 44px;
+
+            padding: 0 13px;
+
+            background: #f5f8fc;
+
+            border-top: 1px solid #e4eaf1;
+
+            border-bottom: 1px solid #dfe6ee;
+
+            color: #64748b;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            text-transform: uppercase;
+
+        }
+
+        .invoice-items td {
+
+            padding: 14px 13px;
+
+            border-bottom: 1px solid #edf1f5;
+
+            color: #344563;
+
+            font-size: 10px;
+
+            vertical-align: middle;
+
+        }
+
+        .invoice-item-name {
+
+            color: #172b4d;
+
+            font-weight: 700;
+
+        }
+
+        .invoice-item-sku {
+
+            margin-top: 3px;
+
+            color: #8a97aa;
+
+            font-size: 9px;
+
+        }
+
+        .invoice-item-number {
+
+            color: #718096;
+
+        }
+
+        .invoice-item-price,
+
+        .invoice-item-total {
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+        }
+
+        /* =====================================================
+
+           TOTAL SECTION
+
+        ===================================================== */
+
+        .invoice-bottom {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            padding-top: 25px;
+
+        }
+
+        .invoice-total-box {
+
+            width: 300px;
+
+        }
+
+        .invoice-total-row {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 25px;
+
+            padding: 7px 0;
+
+        }
+
+        .invoice-total-label {
+
+            color: #718096;
+
+            font-size: 10px;
+
+        }
+
+        .invoice-total-value {
+
+            color: #344563;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+        }
+
+        .invoice-grand-total {
+
+            margin-top: 8px;
+
+            padding-top: 13px;
+
+            border-top: 2px solid #172b4d;
+
+        }
+
+        .invoice-grand-total .invoice-total-label {
+
+            color: #172b4d;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+        }
+
+        .invoice-grand-total .invoice-total-value {
+
+            color: #1677e8;
+
+            font-size: 18px;
+
+            font-weight: 800;
+
+        }
+
+        /* =====================================================
+
+           FOOTER
+
+        ===================================================== */
+
+        .invoice-footer {
+
+            margin-top: 35px;
+
+            padding-top: 20px;
+
+            border-top: 1px solid #e4eaf1;
+
+            text-align: center;
+
+        }
+
+        .invoice-footer-title {
+
+            color: #344563;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+        }
+
+        .invoice-footer-text {
+
+            margin-top: 5px;
+
+            color: #8a97aa;
+
+            font-size: 9px;
+
+        }
+
+        /* =====================================================
+
+           EMPTY
+
+        ===================================================== */
+
+        .invoice-empty {
+
+            padding: 45px 20px;
+
+            text-align: center;
+
+        }
+
+        .invoice-empty img {
+
+            width: 45px;
+
+            height: 45px;
+
+            margin-bottom: 10px;
+
+            opacity: 0.45;
+
+        }
+
+        .invoice-empty-title {
+
+            color: #344563;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+        }
+
+        /* =====================================================
+
+           PRINT
+
+        ===================================================== */
+
+        @media print {
+
+            body {
+
+                background: #ffffff !important;
+
+            }
+
+            .sidebar,
+
+            .topbar,
+
+            .page-header,
+
+            .invoice-actions {
+
+                display: none !important;
+
+            }
+
+            .main {
+
+                margin-left: 0 !important;
+
+                width: 100% !important;
+
+            }
+
+            .content {
+
+                padding: 0 !important;
+
+            }
+
+            .invoice-document {
+
+                max-width: none;
+
+                border: none;
+
+                box-shadow: none;
+
+                border-radius: 0;
+
+            }
+
+            .invoice-inner {
+
+                padding: 25px;
+
+            }
+
+        }
+
+        /* =====================================================
+
+           RESPONSIVE
+
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .invoice-inner {
+
+                padding: 24px;
+
+            }
+
+            .invoice-header {
+
+                flex-direction: column;
+
+            }
+
+            .invoice-title-area {
+
+                text-align: left;
+
+            }
+
+            .invoice-info {
+
+                grid-template-columns: 1fr;
+
+                gap: 25px;
+
+            }
+
+            .invoice-total-box {
+
+                width: 100%;
+
+            }
+
+        }
+
+
+        /* Keep invoice topbar controls aligned to the right */
+
+        .topbar-right {
+
+            margin-left: auto;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================================
+
+         SIDEBAR
+
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="logo">
+
+            <img src="/images/logo.png"
+
+                 alt="StockPro"
+
+                 class="logo-image">
+
+            <div>
+
+                <div class="logo-text">
+
+                    StockPro
+
+                </div>
+
+                <div class="logo-subtitle">
+
+                    Inventory &amp; Order Management
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <nav class="nav">
+
+
+            <!-- MAIN -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    MAIN
+
+                </div>
+
+
+                <a href="/"
+
+                   class="nav-link">
+
+                    <img src="/images/dashboard.png"
+
+                         class="nav-icon"
+
+                         alt="Dashboard">
+
+                    <span>Dashboard</span>
+
+                </a>
+
+
+                <a href="/products"
+
+                   class="nav-link">
+
+                    <img src="/images/products.png"
+
+                         class="nav-icon"
+
+                         alt="Products">
+
+                    <span>Products</span>
+
+                </a>
+
+
+                <a href="/categories"
+
+                   class="nav-link">
+
+                    <img src="/images/categories.png"
+
+                         class="nav-icon"
+
+                         alt="Categories">
+
+                    <span>Categories</span>
+
+                </a>
+
+
+                <a href="/suppliers"
+
+                   class="nav-link">
+
+                    <img src="/images/suppliers.png"
+
+                         class="nav-icon"
+
+                         alt="Suppliers">
+
+                    <span>Suppliers</span>
+
+                </a>
+
+
+                <a href="/customers"
+
+                   class="nav-link">
+
+                    <img src="/images/customers.png"
+
+                         class="nav-icon"
+
+                         alt="Customers">
+
+                    <span>Customers</span>
+
+                </a>
+
+
+                <a href="/orders"
+
+                   class="nav-link active">
+
+                    <img src="/images/orders.png"
+
+                         class="nav-icon"
+
+                         alt="Orders">
+
+                    <span>Orders</span>
+
+                </a>
+
+
+                <a href="/inventory"
+
+                   class="nav-link">
+
+                    <img src="/images/inventory.png"
+
+                         class="nav-icon"
+
+                         alt="Inventory">
+
+                    <span>Inventory</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- ANALYTICS -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    ANALYTICS
+
+                </div>
+
+
+                <a href="/sales"
+
+                   class="nav-link">
+
+                    <img src="/images/sales.png"
+
+                         class="nav-icon"
+
+                         alt="Sales">
+
+                    <span>Sales</span>
+
+                </a>
+
+
+                <a href="/reports"
+
+                   class="nav-link">
+
+                    <img src="/images/reports.png"
+
+                         class="nav-icon"
+
+                         alt="Reports">
+
+                    <span>Reports</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- SYSTEM -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    SYSTEM
+
+                </div>
+
+
+                <a href="/settings"
+
+                   class="nav-link">
+
+                    <img src="/images/settings.png"
+
+                         class="nav-icon"
+
+                         alt="Settings">
+
+                    <span>Settings</span>
+
+                </a>
+
+            </div>
+
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <div class="user-card">
+
+                <img src="/images/avatar.png"
+
+                     class="user-avatar"
+
+                     alt="User">
+
+                <div>
+
+                    <div class="user-name">
+
+                        Dinesh
+
+                    </div>
+
+                    <div class="user-role">
+
+                        Administrator
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =====================================================
+
+         MAIN
+
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <div class="topbar-right">
+
+
+				<a href="/notifications"
+				   class="notification"
+				   aria-label="Notifications">
+
+				    <img src="/images/notification.png"
+				         alt="Notifications">
+
+				    <span class="notification-dot"
+				          id="notificationBadge"></span>
+
+				</a>
+
+
+                <div class="top-user">
+
+                    <img src="/images/avatar.png"
+
+                         alt="User">
+
+                    <div>
+
+                        <div class="top-user-name">
+
+                            Dinesh
+
+                        </div>
+
+                        <div class="top-user-role">
+
+                            Administrator
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+
+             CONTENT
+
+        ====================================================== -->
+
+        <section class="content invoice-page">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+
+                <div>
+
+                    <h1 class="page-title">
+
+                        Invoice
+
+                    </h1>
+
+                    <p class="page-description">
+
+                        View and print the customer order invoice.
+
+                    </p>
+
+                </div>
+
+
+                <div class="invoice-actions">
+
+
+                    <a href="/orders"
+
+                       class="invoice-action invoice-back">
+
+                        Back to Orders
+
+                    </a>
+
+
+                    <button type="button"
+
+                            class="invoice-action invoice-print"
+
+                            onclick="window.print()">
+
+                        Print Invoice
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+
+                 INVOICE
+
+            ================================================== -->
+
+            <div class="invoice-document"
+
+                 th:if="${order != null}">
+
+
+                <div class="invoice-inner">
+
+
+                    <!-- =================================================
+
+                         HEADER
+
+                    ================================================== -->
+
+                    <div class="invoice-header">
+
+
+						<div class="invoice-brand">
+
+						    <img src="/images/logo.png"
+
+						         class="invoice-logo"
+
+						         alt="StockPro">
+
+						</div>
+
+
+                        <div class="invoice-title-area">
+
+                            <h2 class="invoice-title">
+
+                                INVOICE
+
+                            </h2>
+
+                            <div class="invoice-number">
+
+                                <span th:text="${order.orderNumber != null
+
+                                                ? order.orderNumber
+
+                                                : 'N/A'}">
+
+                                    ORD-001
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================================
+
+                         INFORMATION
+
+                    ================================================== -->
+
+                    <div class="invoice-info">
+
+
+                        <!-- CUSTOMER -->
+
+                        <div class="invoice-info-section">
+
+
+                            <div class="invoice-info-heading">
+
+                                Bill To
+
+                            </div>
+
+
+                            <div class="invoice-customer-name"
+
+                                 th:text="${order.customer != null
+
+                                           ? order.customer.name
+
+                                           : 'Unknown Customer'}">
+
+                                Customer Name
+
+                            </div>
+
+
+                            <div class="invoice-info-text">
+
+                                <div th:if="${order.customer != null
+
+                                             and order.customer.phone != null}"
+
+                                     th:text="${order.customer.phone}">
+
+                                    Phone
+
+                                </div>
+
+
+                                <div th:if="${order.customer != null
+
+                                             and order.customer.email != null}"
+
+                                     th:text="${order.customer.email}">
+
+                                    Email
+
+                                </div>
+
+
+                                <div th:if="${order.customer != null
+
+                                             and order.customer.address != null}"
+
+                                     th:text="${order.customer.address}">
+
+                                    Address
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- INVOICE META -->
+
+                        <div class="invoice-info-section">
+
+
+                            <div class="invoice-info-heading">
+
+                                Invoice Information
+
+                            </div>
+
+
+                            <div class="invoice-meta">
+
+
+                                <span class="invoice-meta-label">
+
+                                    Invoice Date
+
+                                </span>
+
+                                <span class="invoice-meta-value"
+
+                                      th:text="${order.orderDate != null
+
+                                                ? #temporals.format(order.orderDate, 'dd MMM yyyy')
+
+                                                : 'Not available'}">
+
+                                    01 Jan 2026
+
+                                </span>
+
+
+                                <span class="invoice-meta-label">
+
+                                    Order Date
+
+                                </span>
+
+                                <span class="invoice-meta-value"
+
+                                      th:text="${order.orderDate != null
+
+                                                ? #temporals.format(order.orderDate, 'dd MMM yyyy HH:mm')
+
+                                                : 'Not available'}">
+
+                                    01 Jan 2026
+
+                                </span>
+
+
+                                <span class="invoice-meta-label">
+
+                                    Payment Method
+
+                                </span>
+
+                                <span class="invoice-meta-value"
+
+                                      th:text="${order.paymentMethod != null
+
+                                                ? order.paymentMethod
+
+                                                : 'Not specified'}">
+
+                                    Cash
+
+                                </span>
+
+
+                                <span class="invoice-meta-label">
+
+                                    Payment Status
+
+                                </span>
+
+                                <span class="invoice-meta-value"
+
+                                      th:text="${order.paymentStatus != null
+
+                                                ? order.paymentStatus
+
+                                                : 'Pending'}">
+
+                                    Pending
+
+                                </span>
+
+
+                                <span class="invoice-meta-label">
+
+                                    Order Status
+
+                                </span>
+
+
+                                <span>
+
+
+                                    <span class="invoice-status invoice-status-pending"
+
+                                          th:if="${order.status != null
+
+                                                  and order.status.toString().equalsIgnoreCase('PENDING')}">
+
+                                        Pending
+
+                                    </span>
+
+
+                                    <span class="invoice-status invoice-status-completed"
+
+                                          th:if="${order.status != null
+
+                                                  and order.status.toString().equalsIgnoreCase('COMPLETED')}">
+
+                                        Completed
+
+                                    </span>
+
+
+                                    <span class="invoice-status invoice-status-cancelled"
+
+                                          th:if="${order.status != null
+
+                                                  and order.status.toString().equalsIgnoreCase('CANCELLED')}">
+
+                                        Cancelled
+
+                                    </span>
+
+
+                                    <span class="invoice-status invoice-status-default"
+
+                                          th:if="${order.status == null
+
+                                                  or (!order.status.toString().equalsIgnoreCase('PENDING')
+
+                                                  and !order.status.toString().equalsIgnoreCase('COMPLETED')
+
+                                                  and !order.status.toString().equalsIgnoreCase('CANCELLED'))}"
+
+                                          th:text="${order.status != null
+
+                                                    ? order.status
+
+                                                    : 'Unknown'}">
+
+                                        Unknown
+
+                                    </span>
+
+
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================================
+
+                         SHIPPING ADDRESS
+
+                    ================================================== -->
+
+                    <div th:if="${order.shippingAddress != null
+
+                                 and !order.shippingAddress.isBlank()}"
+
+                         style="margin-bottom:25px;">
+
+                        <div class="invoice-info-heading">
+
+                            Shipping Address
+
+                        </div>
+
+                        <div class="invoice-info-text"
+
+                             th:text="${order.shippingAddress}">
+
+                            Shipping Address
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+
+                         ITEMS
+
+                    ================================================== -->
+
+                    <div class="invoice-items-wrapper">
+
+
+                        <table class="invoice-items">
+
+
+                            <thead>
+
+                            <tr>
+
+                                <th style="width:50px;">
+
+                                    #
+
+                                </th>
+
+                                <th>
+
+                                    Product
+
+                                </th>
+
+                                <th style="width:100px;">
+
+                                    Quantity
+
+                                </th>
+
+                                <th style="width:130px;">
+
+                                    Unit Price
+
+                                </th>
+
+                                <th style="width:140px;">
+
+                                    Total
+
+                                </th>
+
+                            </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+
+                            <tr th:each="item, stat : ${order.items}">
+
+
+                                <td>
+
+                                    <span class="invoice-item-number"
+
+                                          th:text="${stat.count}">
+
+                                        1
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="invoice-item-name"
+
+                                         th:text="${item.product != null
+
+                                                   ? item.product.name
+
+                                                   : 'Unknown Product'}">
+
+                                        Product
+
+                                    </div>
+
+
+                                    <div class="invoice-item-sku"
+
+                                         th:if="${item.product != null}"
+
+                                         th:text="${item.product.sku}">
+
+                                        SKU
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span th:text="${item.quantity != null
+
+                                                    ? item.quantity
+
+                                                    : 0}">
+
+                                        1
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="invoice-item-price">
+
+                                        ₹<span th:text="${item.price != null
+
+                                                         ? #numbers.formatDecimal(item.price, 1, 2)
+
+                                                         : '0.00'}">
+
+                                            0.00
+
+                                        </span>
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="invoice-item-total">
+
+                                        ₹<span th:text="${item.total != null
+
+                                                         ? #numbers.formatDecimal(item.total, 1, 2)
+
+                                                         : '0.00'}">
+
+                                            0.00
+
+                                        </span>
+
+                                    </span>
+
+                                </td>
+
+
+                            </tr>
+
+
+                            <tr th:if="${order.items == null
+
+                                        or #lists.isEmpty(order.items)}">
+
+                                <td colspan="5"
+
+                                    style="text-align:center; padding:30px; color:#8a97aa;">
+
+                                    No items found for this order.
+
+                                </td>
+
+                            </tr>
+
+
+                            </tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+
+                    <!-- =================================================
+
+                         TOTAL
+
+                    ================================================== -->
+
+                    <div class="invoice-bottom">
+
+
+                        <div class="invoice-total-box">
+
+
+                            <div class="invoice-total-row">
+
+                                <span class="invoice-total-label">
+
+                                    Subtotal
+
+                                </span>
+
+                                <span class="invoice-total-value">
+
+                                    ₹<span th:text="${order.totalAmount != null
+
+                                                     ? #numbers.formatDecimal(order.totalAmount, 1, 2)
+
+                                                     : '0.00'}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="invoice-total-row">
+
+                                <span class="invoice-total-label">
+
+                                    Tax
+
+                                </span>
+
+                                <span class="invoice-total-value">
+
+                                    ₹0.00
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="invoice-total-row">
+
+                                <span class="invoice-total-label">
+
+                                    Shipping
+
+                                </span>
+
+                                <span class="invoice-total-value">
+
+                                    ₹0.00
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="invoice-total-row invoice-grand-total">
+
+                                <span class="invoice-total-label">
+
+                                    Grand Total
+
+                                </span>
+
+                                <span class="invoice-total-value">
+
+                                    ₹<span th:text="${order.totalAmount != null
+
+                                                     ? #numbers.formatDecimal(order.totalAmount, 1, 2)
+
+                                                     : '0.00'}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================================
+
+                         FOOTER
+
+                    ================================================== -->
+
+                    <div class="invoice-footer">
+
+                        <div class="invoice-footer-title">
+
+                            Thank you for your business.
+
+                        </div>
+
+                        <div class="invoice-footer-text">
+
+                            This invoice was generated by StockPro Inventory &amp; Order Management.
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+
+                 EMPTY
+
+            ================================================== -->
+
+            <div class="card"
+
+                 th:if="${order == null}">
+
+
+                <div class="invoice-empty">
+
+                    <img src="/images/orders.png"
+
+                         alt="Invoice">
+
+                    <div class="invoice-empty-title">
+
+                        Invoice not available
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const badge =
+        document.getElementById("notificationBadge");
+
+    if (!badge) {
+        return;
+    }
+
+    function updateNotificationBadge() {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem("stockProSettings") || "null"
+            ) || {};
+
+        if (saved.notificationsEnabled === false) {
+            badge.style.display = "none";
+            return;
+        }
+
+        const threshold =
+            Math.max(
+                1,
+                Math.min(
+                    100,
+                    Number(saved.lowStockThreshold) || 10
+                )
+            );
+
+        fetch("/notifications", {
+            method: "GET",
+            cache: "no-store"
+        })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("Unable to load notifications");
+            }
+            return response.text();
+        })
+        .then(function (html) {
+
+            const parser = new DOMParser();
+
+            const notificationPage =
+                parser.parseFromString(html, "text/html");
+
+            let notificationCount = 0;
+
+            const stockAlerts =
+                notificationPage.querySelectorAll(".stock-alert");
+
+            stockAlerts.forEach(function (item) {
+
+                const stock =
+                    Number(
+                        item.getAttribute("data-stock")
+                    ) || 0;
+
+                if (
+                    stock === 0 ||
+                    (stock > 0 && stock <= threshold)
+                ) {
+                    notificationCount++;
+                }
+            });
+
+            const pendingOrders =
+                notificationPage.querySelectorAll(
+                    ".pending-order-alert"
+                );
+
+            notificationCount += pendingOrders.length;
+
+            if (notificationCount > 0) {
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+
+        })
+        .catch(function (error) {
+
+            console.error(
+                "Notification badge error:",
+                error
+            );
+
+            badge.style.display = "none";
+        });
+    }
+
+    updateNotificationBadge();
+
+    setInterval(
+        updateNotificationBadge,
+        30000
+    );
+
+});
+</script>
+
+</body>
+
+</html>

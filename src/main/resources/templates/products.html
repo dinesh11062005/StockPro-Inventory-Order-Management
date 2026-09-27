@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+
+<html lang="en"
+
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Products | StockPro</title>
+
+    <link rel="stylesheet"
+
+          th:href="@{/css/style.css}">
+
+
+    <style>
+
+        /* =====================================================
+
+           PRODUCTS PAGE ONLY
+
+        ===================================================== */
+
+        .products-page {
+
+            width: 100%;
+
+        }
+
+        /* =====================================================
+
+           PRODUCT FORM
+
+        ===================================================== */
+
+        .product-form-card {
+
+            margin-bottom: 24px;
+
+        }
+
+        .product-form-header {
+
+            padding: 20px 22px;
+
+            border-bottom: 1px solid #e4eaf1;
+
+        }
+
+        .product-form-title {
+
+            margin: 0;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            color: #172b4d;
+
+        }
+
+        .product-form-description {
+
+            margin: 5px 0 0;
+
+            color: #718096;
+
+            font-size: 12px;
+
+        }
+
+        .product-form-body {
+
+            padding: 24px;
+
+        }
+
+        .product-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+
+            gap: 20px;
+
+        }
+
+        .product-field {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+
+        }
+
+        .product-field label {
+
+            color: #344563;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+        }
+
+        .product-field input,
+
+        .product-field select,
+
+        .product-field textarea {
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            border: 1px solid #d9e2ec;
+
+            border-radius: 7px;
+
+            background: #ffffff;
+
+            color: #172b4d;
+
+            font-family: inherit;
+
+            font-size: 12px;
+
+            outline: none;
+
+            transition: 0.2s ease;
+
+        }
+
+        .product-field input,
+
+        .product-field select {
+
+            height: 40px;
+
+            padding: 0 12px;
+
+        }
+
+        .product-field textarea {
+
+            min-height: 100px;
+
+            padding: 11px 12px;
+
+            resize: vertical;
+
+        }
+
+        .product-field input:focus,
+
+        .product-field select:focus,
+
+        .product-field textarea:focus {
+
+            border-color: #1677e8;
+
+            box-shadow: 0 0 0 3px rgba(22, 119, 232, 0.10);
+
+        }
+
+        .product-field-full {
+
+            grid-column: 1 / -1;
+
+        }
+
+        .product-form-actions {
+
+            grid-column: 1 / -1;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding-top: 2px;
+
+        }
+
+        .product-form-actions button,
+
+        .product-form-actions a {
+
+            height: 38px;
+
+            padding: 0 18px;
+
+            border-radius: 7px;
+
+            border: none;
+
+            font-family: inherit;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            cursor: pointer;
+
+        }
+
+        .product-submit {
+
+            background: #1677e8;
+
+            color: #ffffff;
+
+        }
+
+        .product-submit:hover {
+
+            background: #075bb5;
+
+        }
+
+        .product-cancel {
+
+            background: #eef2f7;
+
+            color: #40536b;
+
+        }
+
+        .product-cancel:hover {
+
+            background: #e1e7ef;
+
+        }
+
+
+        /* =====================================================
+
+           PRODUCT LIST HEADER
+
+        ===================================================== */
+
+        .product-list-header {
+
+            padding: 20px 22px;
+
+            border-bottom: 1px solid #e4eaf1;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+        }
+
+        .product-list-title {
+
+            margin: 0;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            color: #172b4d;
+
+        }
+
+        .product-list-description {
+
+            margin: 5px 0 0;
+
+            color: #718096;
+
+            font-size: 12px;
+
+        }
+
+        .product-count {
+
+            color: #718096;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+
+        }
+
+
+        /* =====================================================
+
+           TABLE
+
+        ===================================================== */
+
+        .product-table-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
+        .product-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 900px;
+
+        }
+
+        .product-table th {
+
+            height: 48px;
+
+            padding: 0 16px;
+
+            background: #f7f9fc;
+
+            border-bottom: 1px solid #e4eaf1;
+
+            color: #64748b;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            text-transform: uppercase;
+
+            white-space: nowrap;
+
+        }
+
+        .product-table td {
+
+            height: 62px;
+
+            padding: 8px 16px;
+
+            border-bottom: 1px solid #edf1f5;
+
+            color: #344563;
+
+            font-size: 11px;
+
+            vertical-align: middle;
+
+            white-space: nowrap;
+
+        }
+
+        .product-table tbody tr:hover {
+
+            background: #fafcff;
+
+        }
+
+
+        /* =====================================================
+
+           PRODUCT NAME
+
+        ===================================================== */
+
+        .product-info {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+        .product-thumb {
+
+            width: 40px;
+
+            height: 40px;
+
+            border-radius: 7px;
+
+            object-fit: cover;
+
+            border: 1px solid #e4eaf1;
+
+            background: #f4f7fb;
+
+            flex-shrink: 0;
+
+        }
+
+        .product-name {
+
+            color: #172b4d;
+
+            font-weight: 600;
+
+            font-size: 11px;
+
+        }
+
+        .product-sku {
+
+            color: #718096;
+
+            font-size: 11px;
+
+        }
+
+        .product-price {
+
+            color: #172b4d;
+
+            font-weight: 700;
+
+        }
+
+        .stock-value {
+
+            font-weight: 700;
+
+        }
+
+        .stock-good {
+
+            color: #16805b;
+
+        }
+
+        .stock-low {
+
+            color: #b77900;
+
+        }
+
+        .stock-out {
+
+            color: #d14343;
+
+        }
+
+
+        /* =====================================================
+
+           STATUS
+
+        ===================================================== */
+
+        .product-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-width: 72px;
+
+            height: 27px;
+
+            padding: 0 9px;
+
+            border-radius: 6px;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+        }
+
+        .product-status-success {
+
+            background: #e5f8ef;
+
+            color: #16805b;
+
+        }
+
+        .product-status-warning {
+
+            background: #fff4d8;
+
+            color: #b77900;
+
+        }
+
+        .product-status-danger {
+
+            background: #ffe7e7;
+
+            color: #d14343;
+
+        }
+
+
+        /* =====================================================
+
+           ACTIONS
+
+        ===================================================== */
+
+        .product-action-group {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+        }
+
+        .product-action {
+
+            height: 30px;
+
+            padding: 0 11px;
+
+            border-radius: 6px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-decoration: none;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+        }
+
+        .product-edit {
+
+            background: #eef4fb;
+
+            color: #1677e8;
+
+        }
+
+        .product-edit:hover {
+
+            background: #dfeeff;
+
+        }
+
+        .product-delete {
+
+            background: #fff0f0;
+
+            color: #d14343;
+
+        }
+
+        .product-delete:hover {
+
+            background: #ffe1e1;
+
+        }
+
+
+        /* =====================================================
+
+           EMPTY
+
+        ===================================================== */
+
+        .product-empty {
+
+            padding: 45px 20px;
+
+            text-align: center;
+
+        }
+
+        .product-empty img {
+
+            width: 45px;
+
+            height: 45px;
+
+            opacity: 0.45;
+
+            margin-bottom: 10px;
+
+        }
+
+        .product-empty-title {
+
+            color: #344563;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+        }
+
+        .product-empty-text {
+
+            margin-top: 5px;
+
+            color: #8a97aa;
+
+            font-size: 11px;
+
+        }
+
+
+        /* =====================================================
+
+           RESPONSIVE
+
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .product-grid {
+
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .product-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .product-field-full,
+
+            .product-form-actions {
+
+                grid-column: auto;
+
+            }
+
+            .product-list-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================================
+
+         SIDEBAR
+
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <img src="/images/logo.png"
+
+                 alt="StockPro"
+
+                 class="logo-image">
+
+            <div>
+
+                <div class="logo-text">
+
+                    StockPro
+
+                </div>
+
+                <div class="logo-subtitle">
+
+                    Inventory &amp; Order Management
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="nav">
+
+
+            <!-- MAIN -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    MAIN
+
+                </div>
+
+
+                <a href="/"
+
+                   class="nav-link">
+
+                    <img src="/images/dashboard.png"
+
+                         class="nav-icon"
+
+                         alt="Dashboard">
+
+                    <span>
+
+                        Dashboard
+
+                    </span>
+
+                </a>
+
+
+                <a href="/products"
+
+                   class="nav-link active">
+
+                    <img src="/images/products.png"
+
+                         class="nav-icon"
+
+                         alt="Products">
+
+                    <span>
+
+                        Products
+
+                    </span>
+
+                </a>
+
+
+                <a href="/categories"
+
+                   class="nav-link">
+
+                    <img src="/images/categories.png"
+
+                         class="nav-icon"
+
+                         alt="Categories">
+
+                    <span>
+
+                        Categories
+
+                    </span>
+
+                </a>
+
+
+                <a href="/suppliers"
+
+                   class="nav-link">
+
+                    <img src="/images/suppliers.png"
+
+                         class="nav-icon"
+
+                         alt="Suppliers">
+
+                    <span>
+
+                        Suppliers
+
+                    </span>
+
+                </a>
+
+
+                <a href="/customers"
+
+                   class="nav-link">
+
+                    <img src="/images/customers.png"
+
+                         class="nav-icon"
+
+                         alt="Customers">
+
+                    <span>
+
+                        Customers
+
+                    </span>
+
+                </a>
+
+
+                <a href="/orders"
+
+                   class="nav-link">
+
+                    <img src="/images/orders.png"
+
+                         class="nav-icon"
+
+                         alt="Orders">
+
+                    <span>
+
+                        Orders
+
+                    </span>
+
+                </a>
+
+
+                <a href="/inventory"
+
+                   class="nav-link">
+
+                    <img src="/images/inventory.png"
+
+                         class="nav-icon"
+
+                         alt="Inventory">
+
+                    <span>
+
+                        Inventory
+
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <!-- ANALYTICS -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    ANALYTICS
+
+                </div>
+
+
+                <a href="/sales"
+
+                   class="nav-link">
+
+                    <img src="/images/sales.png"
+
+                         class="nav-icon"
+
+                         alt="Sales">
+
+                    <span>
+
+                        Sales
+
+                    </span>
+
+                </a>
+
+
+                <a href="/reports"
+
+                   class="nav-link">
+
+                    <img src="/images/reports.png"
+
+                         class="nav-icon"
+
+                         alt="Reports">
+
+                    <span>
+
+                        Reports
+
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <!-- SYSTEM -->
+
+			<div class="nav-section">
+
+			    <div class="nav-title">SYSTEM</div>
+
+			    <a href="/settings" class="nav-link">
+
+			        <img src="/images/settings.png"
+			             class="nav-icon"
+			             alt="Settings">
+
+			        <span>Settings</span>
+
+			    </a>
+
+			</div>
+
+
+        </nav>
+
+
+        <!-- SIDEBAR USER -->
+
+        <div class="sidebar-footer">
+
+            <div class="user-card">
+
+                <img src="/images/avatar.png"
+
+                     class="user-avatar"
+
+                     alt="User">
+
+                <div>
+
+                    <div class="user-name">
+
+                        Dinesh
+
+                    </div>
+
+                    <div class="user-role">
+
+                        Administrator
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =====================================================
+
+         MAIN
+
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <div class="search-box">
+
+                <img src="/images/search.png"
+
+                     class="search-icon"
+
+                     alt="Search">
+
+                <input type="text"
+
+                       placeholder="Search products...">
+
+            </div>
+
+
+            <div class="topbar-right">
+
+
+				<a href="/notifications"
+				   class="notification"
+				   aria-label="Notifications">
+
+				    <img src="/images/notification.png"
+				         alt="Notifications">
+
+				    <span class="notification-dot"
+				          id="notificationBadge"></span>
+
+				</a>
+
+                <div class="top-user">
+
+                    <img src="/images/avatar.png"
+
+                         alt="User">
+
+                    <div>
+
+                        <div class="top-user-name">
+
+                            Dinesh
+
+                        </div>
+
+                        <div class="top-user-role">
+
+                            Administrator
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+
+             CONTENT
+
+        ====================================================== -->
+
+        <section class="content products-page">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1 class="page-title">
+
+                        Products
+
+                    </h1>
+
+                    <p class="page-description">
+
+                        Manage products, pricing, stock and suppliers.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+
+                 PRODUCT FORM
+
+            ================================================== -->
+
+            <div class="card product-form-card">
+
+
+                <div class="product-form-header">
+
+                    <h2 class="product-form-title">
+
+                        Product Information
+
+                    </h2>
+
+                    <p class="product-form-description">
+
+                        Add a new product or update an existing product.
+
+                    </p>
+
+                </div>
+
+
+                <div class="product-form-body">
+
+
+                    <form th:action="@{/products/save}"
+
+                          th:object="${product}"
+
+                          method="post">
+
+
+                        <input type="hidden"
+
+                               th:field="*{id}">
+
+
+                        <div class="product-grid">
+
+
+                            <!-- PRODUCT NAME -->
+
+                            <div class="product-field">
+
+                                <label for="name">
+
+                                    Product Name
+
+                                </label>
+
+                                <input type="text"
+
+                                       id="name"
+
+                                       th:field="*{name}"
+
+                                       placeholder="Enter product name"
+
+                                       required>
+
+                            </div>
+
+
+                            <!-- SKU -->
+
+                            <div class="product-field">
+
+                                <label for="sku">
+
+                                    SKU
+
+                                </label>
+
+                                <input type="text"
+
+                                       id="sku"
+
+                                       th:field="*{sku}"
+
+                                       placeholder="Enter SKU"
+
+                                       required>
+
+                            </div>
+
+
+                            <!-- PRICE -->
+
+                            <div class="product-field">
+
+                                <label for="price">
+
+                                    Price
+
+                                </label>
+
+                                <input type="number"
+
+                                       id="price"
+
+                                       th:field="*{price}"
+
+                                       placeholder="Enter price"
+
+                                       min="0"
+
+                                       step="0.01"
+
+                                       required>
+
+                            </div>
+
+
+                            <!-- STOCK -->
+
+                            <div class="product-field">
+
+                                <label for="stockQuantity">
+
+                                    Stock Quantity
+
+                                </label>
+
+                                <input type="number"
+
+                                       id="stockQuantity"
+
+                                       th:field="*{stockQuantity}"
+
+                                       placeholder="Enter stock quantity"
+
+                                       min="0"
+
+                                       required>
+
+                            </div>
+
+
+                            <!-- CATEGORY -->
+
+                            <div class="product-field">
+
+                                <label for="category">
+
+                                    Category
+
+                                </label>
+
+                                <select id="category"
+
+                                        name="category.id"
+
+                                        required>
+
+                                    <option value="">
+
+                                        Select Category
+
+                                    </option>
+
+                                    <option th:each="category : ${categories}"
+
+                                            th:value="${category.id}"
+
+                                            th:text="${category.name}"
+
+                                            th:selected="${product.category != null and product.category.id == category.id}">
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- SUPPLIER -->
+
+                            <div class="product-field">
+
+                                <label for="supplier">
+
+                                    Supplier
+
+                                </label>
+
+                                <select id="supplier"
+
+                                        name="supplier.id"
+
+                                        required>
+
+                                    <option value="">
+
+                                        Select Supplier
+
+                                    </option>
+
+                                    <option th:each="supplier : ${suppliers}"
+
+                                            th:value="${supplier.id}"
+
+                                            th:text="${supplier.name}"
+
+                                            th:selected="${product.supplier != null and product.supplier.id == supplier.id}">
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- IMAGE -->
+
+                            <div class="product-field">
+
+                                <label for="image">
+
+                                    Image
+
+                                </label>
+
+                                <input type="text"
+
+                                       id="image"
+
+                                       th:field="*{image}"
+
+                                       placeholder="Image file name">
+
+                            </div>
+
+
+                            <!-- DESCRIPTION -->
+
+                            <div class="product-field product-field-full">
+
+                                <label for="description">
+
+                                    Description
+
+                                </label>
+
+                                <textarea id="description"
+
+                                          th:field="*{description}"
+
+                                          placeholder="Enter product description"></textarea>
+
+                            </div>
+
+
+                            <!-- ACTIONS -->
+
+                            <div class="product-form-actions">
+
+
+                                <button type="submit"
+
+                                        class="product-submit">
+
+                                    <span th:if="${product.id == null}">
+
+                                        Add Product
+
+                                    </span>
+
+                                    <span th:unless="${product.id == null}">
+
+                                        Update Product
+
+                                    </span>
+
+                                </button>
+
+
+                                <a th:if="${product.id != null}"
+
+                                   href="/products"
+
+                                   class="product-cancel">
+
+                                    Cancel
+
+                                </a>
+
+
+                            </div>
+
+
+                        </div>
+
+                    </form>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+
+                 PRODUCT LIST
+
+            ================================================== -->
+
+            <div class="card">
+
+
+                <!-- LIST HEADER -->
+
+                <div class="product-list-header">
+
+                    <div>
+
+                        <h2 class="product-list-title">
+
+                            Product List
+
+                        </h2>
+
+                        <p class="product-list-description">
+
+                            All products currently registered in the system.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="product-count">
+
+                        <span th:text="${#lists.size(products)}">
+
+                            0
+
+                        </span>
+
+                        Products
+
+                    </div>
+
+                </div>
+
+
+                <!-- TABLE -->
+
+                <div class="product-table-wrapper">
+
+
+                    <table class="product-table">
+
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+
+                                Product
+
+                            </th>
+
+                            <th>
+
+                                SKU
+
+                            </th>
+
+                            <th>
+
+                                Category
+
+                            </th>
+
+                            <th>
+
+                                Supplier
+
+                            </th>
+
+                            <th>
+
+                                Price
+
+                            </th>
+
+                            <th>
+
+                                Stock
+
+                            </th>
+
+                            <th>
+
+                                Status
+
+                            </th>
+
+                            <th>
+
+                                Actions
+
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                        <!-- PRODUCT ROW -->
+
+                        <tr th:each="product : ${products}">
+
+
+                            <!-- PRODUCT -->
+
+                            <td>
+
+                                <div class="product-info">
+
+
+                                    <img th:src="${product.image != null and !product.image.isBlank()
+
+                                                  ? '/images/' + product.image
+
+                                                  : '/images/products.png'}"
+
+                                         class="product-thumb"
+
+                                         alt="Product"
+
+                                         onerror="this.src='/images/products.png';">
+
+
+                                    <div class="product-name"
+
+                                         th:text="${product.name}">
+
+                                        Product Name
+
+                                    </div>
+
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- SKU -->
+
+                            <td>
+
+                                <span class="product-sku"
+
+                                      th:text="${product.sku}">
+
+                                    SKU001
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- CATEGORY -->
+
+                            <td>
+
+                                <span th:if="${product.category != null}"
+
+                                      th:text="${product.category.name}">
+
+                                    Category
+
+                                </span>
+
+                                <span th:unless="${product.category != null}">
+
+                                    Uncategorized
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- SUPPLIER -->
+
+                            <td>
+
+                                <span th:if="${product.supplier != null}"
+
+                                      th:text="${product.supplier.name}">
+
+                                    Supplier
+
+                                </span>
+
+                                <span th:unless="${product.supplier != null}">
+
+                                    No Supplier
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- PRICE -->
+
+                            <td>
+
+                                <span class="product-price">
+
+                                    ₹<span th:text="${product.price}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- STOCK -->
+
+                            <td>
+
+                                <span class="stock-value stock-good"
+
+                                      th:if="${product.stockQuantity != null and product.stockQuantity > 10}"
+
+                                      th:text="${product.stockQuantity}">
+
+                                    0
+
+                                </span>
+
+
+                                <span class="stock-value stock-low"
+
+                                      th:if="${product.stockQuantity != null and product.stockQuantity > 0 and product.stockQuantity <= 10}"
+
+                                      th:text="${product.stockQuantity}">
+
+                                    0
+
+                                </span>
+
+
+                                <span class="stock-value stock-out"
+
+                                      th:if="${product.stockQuantity == null or product.stockQuantity == 0}">
+
+                                    0
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+
+                                <span class="product-status product-status-success"
+
+                                      th:if="${product.stockQuantity != null and product.stockQuantity > 10}">
+
+                                    In Stock
+
+                                </span>
+
+
+                                <span class="product-status product-status-warning"
+
+                                      th:if="${product.stockQuantity != null and product.stockQuantity > 0 and product.stockQuantity <= 10}">
+
+                                    Low Stock
+
+                                </span>
+
+
+                                <span class="product-status product-status-danger"
+
+                                      th:if="${product.stockQuantity == null or product.stockQuantity == 0}">
+
+                                    Out of Stock
+
+                                </span>
+
+
+                            </td>
+
+
+                            <!-- ACTIONS -->
+
+                            <td>
+
+                                <div class="product-action-group">
+
+
+                                    <a th:href="@{/products/edit/{id}(id=${product.id})}"
+
+                                       class="product-action product-edit">
+
+                                        Edit
+
+                                    </a>
+
+
+                                    <a th:href="@{/products/delete/{id}(id=${product.id})}"
+
+                                       class="product-action product-delete"
+
+                                       onclick="return confirm('Are you sure you want to delete this product?');">
+
+                                        Delete
+
+                                    </a>
+
+
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+
+
+                        <!-- EMPTY -->
+
+                        <tr th:if="${products == null or #lists.isEmpty(products)}">
+
+                            <td colspan="8">
+
+
+                                <div class="product-empty">
+
+                                    <img src="/images/products.png"
+
+                                         alt="Products">
+
+                                    <div class="product-empty-title">
+
+                                        No products found
+
+                                    </div>
+
+                                    <div class="product-empty-text">
+
+                                        Add your first product using the form above.
+
+                                    </div>
+
+                                </div>
+
+
+                            </td>
+
+                        </tr>
+
+
+                        </tbody>
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchInput = document.querySelector(".search-box input");
+
+        if (!searchInput) {
+            return;
+        }
+
+        const rows = document.querySelectorAll(".product-table tbody tr");
+
+        searchInput.addEventListener("input", function () {
+
+            const searchText = this.value.toLowerCase().trim();
+
+            rows.forEach(function (row) {
+
+                const isEmptyRow =
+                    row.querySelector(".product-empty") !== null;
+
+                if (isEmptyRow) {
+                    return;
+                }
+
+                const rowText =
+                    row.textContent
+                        .toLowerCase()
+                        .replace(/\s+/g, " ")
+                        .trim();
+
+                row.style.display =
+                    searchText === "" || rowText.includes(searchText)
+                        ? ""
+                        : "none";
+            });
+        });
+    });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const badge =
+        document.getElementById("notificationBadge");
+
+    if (!badge) {
+        return;
+    }
+
+    function updateNotificationBadge() {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem("stockProSettings") || "null"
+            ) || {};
+
+        if (saved.notificationsEnabled === false) {
+            badge.style.display = "none";
+            return;
+        }
+
+        const threshold =
+            Math.max(
+                1,
+                Math.min(
+                    100,
+                    Number(saved.lowStockThreshold) || 10
+                )
+            );
+
+        fetch("/notifications", {
+            method: "GET",
+            cache: "no-store"
+        })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("Unable to load notifications");
+            }
+            return response.text();
+        })
+        .then(function (html) {
+
+            const parser = new DOMParser();
+
+            const notificationPage =
+                parser.parseFromString(html, "text/html");
+
+            let notificationCount = 0;
+
+            const stockAlerts =
+                notificationPage.querySelectorAll(".stock-alert");
+
+            stockAlerts.forEach(function (item) {
+
+                const stock =
+                    Number(
+                        item.getAttribute("data-stock")
+                    ) || 0;
+
+                if (
+                    stock === 0 ||
+                    (stock > 0 && stock <= threshold)
+                ) {
+                    notificationCount++;
+                }
+            });
+
+            const pendingOrders =
+                notificationPage.querySelectorAll(
+                    ".pending-order-alert"
+                );
+
+            notificationCount += pendingOrders.length;
+
+            if (notificationCount > 0) {
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+
+        })
+        .catch(function (error) {
+
+            console.error(
+                "Notification badge error:",
+                error
+            );
+
+            badge.style.display = "none";
+        });
+    }
+
+    updateNotificationBadge();
+
+    setInterval(
+        updateNotificationBadge,
+        30000
+    );
+
+});
+</script>
+
+</body>
+
+</html>

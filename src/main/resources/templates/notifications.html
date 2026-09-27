@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+
+<html lang="en"
+
+      xmlns:th="http://www\.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Notifications | StockPro</title>
+
+    <link rel="stylesheet"
+
+          th:href="@{/css/style.css}">
+
+    <style>
+
+        .notifications-page {
+
+            width: 100%;
+
+        }
+
+        .notifications-card {
+
+            max-width: 950px;
+
+        }
+
+        .notifications-header {
+
+            min-height: 70px;
+
+            padding: 18px 22px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            border-bottom: 1px solid #e4eaf1;
+
+        }
+
+        .notifications-title {
+
+            margin: 0;
+
+            color: #172b4d;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+        }
+
+        .notifications-description {
+
+            margin: 5px 0 0;
+
+            color: #718096;
+
+            font-size: 11px;
+
+        }
+
+        .notifications-count {
+
+            color: #718096;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+
+        }
+
+        .notification-list {
+
+            padding: 6px 22px;
+
+        }
+
+        .notification-item {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 13px;
+
+            padding: 17px 0;
+
+            border-bottom: 1px solid #edf1f5;
+
+        }
+
+        .notification-item:last-child {
+
+            border-bottom: none;
+
+        }
+
+        .notification-icon {
+
+            width: 38px;
+
+            height: 38px;
+
+            border-radius: 8px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-shrink: 0;
+
+        }
+
+        .notification-icon img {
+
+            width: 23px;
+
+            height: 23px;
+
+            object-fit: contain;
+
+        }
+
+        .notification-icon-low {
+
+            background: #fff6df;
+
+        }
+
+        .notification-icon-out {
+
+            background: #fff0f0;
+
+        }
+
+        .notification-icon-order {
+
+            background: #e9f2ff;
+
+        }
+
+        .notification-content {
+
+            min-width: 0;
+
+            flex: 1;
+
+        }
+
+        .notification-heading {
+
+            color: #172b4d;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+        }
+
+        .notification-text {
+
+            margin-top: 4px;
+
+            color: #718096;
+
+            font-size: 10px;
+
+            line-height: 1.5;
+
+        }
+
+        .notification-action {
+
+            height: 29px;
+
+            padding: 0 10px;
+
+            border-radius: 6px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #eef4fb;
+
+            color: #1677e8;
+
+            text-decoration: none;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+
+        }
+
+        .notification-action:hover {
+
+            background: #dfeeff;
+
+        }
+
+        .notifications-empty {
+
+            padding: 55px 20px;
+
+            text-align: center;
+
+        }
+
+        .notifications-empty img {
+
+            width: 45px;
+
+            height: 45px;
+
+            opacity: 0.45;
+
+            margin-bottom: 10px;
+
+        }
+
+        .notifications-empty-title {
+
+            color: #344563;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+        }
+
+        .notifications-empty-text {
+
+            margin-top: 5px;
+
+            color: #8a97aa;
+
+            font-size: 11px;
+
+        }
+
+        .notifications-disabled {
+
+            display: none;
+
+        }
+
+        .notification-summary {
+
+            display: flex;
+
+            gap: 10px;
+
+            padding: 16px 22px;
+
+            background: #f7f9fc;
+
+            border-bottom: 1px solid #e4eaf1;
+
+        }
+
+        .notification-summary-item {
+
+            padding: 7px 10px;
+
+            border-radius: 6px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+        }
+
+        .summary-alert {
+
+            background: #fff6df;
+
+            color: #a66b00;
+
+        }
+
+        .summary-danger {
+
+            background: #fff0f0;
+
+            color: #c43d3d;
+
+        }
+
+        .summary-info {
+
+            background: #eaf3ff;
+
+            color: #1677e8;
+
+        }
+
+        @media (max-width: 700px) {
+
+            .notifications-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <img src="/images/logo.png"
+
+                 alt="StockPro"
+
+                 class="logo-image">
+
+            <div>
+
+                <div class="logo-text">StockPro</div>
+
+                <div class="logo-subtitle">Inventory &amp; Order Management</div>
+
+            </div>
+
+        </div>
+
+        <nav class="nav">
+
+            <div class="nav-section">
+
+                <div class="nav-title">MAIN</div>
+
+                <a href="/" class="nav-link">
+
+                    <img src="/images/dashboard.png" class="nav-icon" alt="Dashboard">
+
+                    <span>Dashboard</span>
+
+                </a>
+
+                <a href="/products" class="nav-link">
+
+                    <img src="/images/products.png" class="nav-icon" alt="Products">
+
+                    <span>Products</span>
+
+                </a>
+
+                <a href="/categories" class="nav-link">
+
+                    <img src="/images/categories.png" class="nav-icon" alt="Categories">
+
+                    <span>Categories</span>
+
+                </a>
+
+                <a href="/suppliers" class="nav-link">
+
+                    <img src="/images/suppliers.png" class="nav-icon" alt="Suppliers">
+
+                    <span>Suppliers</span>
+
+                </a>
+
+                <a href="/customers" class="nav-link">
+
+                    <img src="/images/customers.png" class="nav-icon" alt="Customers">
+
+                    <span>Customers</span>
+
+                </a>
+
+                <a href="/orders" class="nav-link">
+
+                    <img src="/images/orders.png" class="nav-icon" alt="Orders">
+
+                    <span>Orders</span>
+
+                </a>
+
+                <a href="/inventory" class="nav-link">
+
+                    <img src="/images/inventory.png" class="nav-icon" alt="Inventory">
+
+                    <span>Inventory</span>
+
+                </a>
+
+            </div>
+
+            <div class="nav-section">
+
+                <div class="nav-title">ANALYTICS</div>
+
+                <a href="/sales" class="nav-link">
+
+                    <img src="/images/sales.png" class="nav-icon" alt="Sales">
+
+                    <span>Sales</span>
+
+                </a>
+
+                <a href="/reports" class="nav-link">
+
+                    <img src="/images/reports.png" class="nav-icon" alt="Reports">
+
+                    <span>Reports</span>
+
+                </a>
+
+            </div>
+
+            <div class="nav-section">
+
+                <div class="nav-title">SYSTEM</div>
+
+                <a href="/settings" class="nav-link">
+
+                    <img src="/images/settings.png" class="nav-icon" alt="Settings">
+
+                    <span>Settings</span>
+
+                </a>
+
+            </div>
+
+        </nav>
+
+        <div class="sidebar-footer">
+
+            <div class="user-card">
+
+                <img src="/images/avatar.png" class="user-avatar" alt="User">
+
+                <div>
+
+                    <div class="user-name">Dinesh</div>
+
+                    <div class="user-role">Administrator</div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="search-box">
+
+                <img src="/images/search.png"
+
+                     class="search-icon"
+
+                     alt="Search">
+
+                <input type="text"
+
+                       placeholder="Search notifications...">
+
+            </div>
+
+            <div class="topbar-right">
+
+				<a href="/notifications"
+				   class="notification"
+				   aria-label="Notifications">
+
+				    <img src="/images/notification.png"
+				         alt="Notifications">
+
+				    <span class="notification-dot"
+				          id="notificationBadge"></span>
+
+				</a>
+
+                <div class="top-user">
+
+                    <img src="/images/avatar.png" alt="User">
+
+                    <div>
+
+                        <div class="top-user-name">Dinesh</div>
+
+                        <div class="top-user-role">Administrator</div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <section class="content notifications-page">
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1 class="page-title">Notifications</h1>
+
+                    <p class="page-description">
+
+                        Inventory and order alerts that need attention.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="card notifications-card"
+
+                 id="notificationsCard">
+
+                <div class="notifications-header">
+
+                    <div>
+
+                        <h2 class="notifications-title">Notification Center</h2>
+
+                        <p class="notifications-description">
+
+                            Current alerts from your inventory and orders.
+
+                        </p>
+
+                    </div>
+
+                    <div class="notifications-count"
+
+                         id="notificationCount">
+
+                        0 Alerts
+
+                    </div>
+
+                </div>
+
+                <div class="notification-summary">
+
+                    <div class="notification-summary-item summary-alert"
+
+                         id="lowCount">
+
+                        Low Stock: 0
+
+                    </div>
+
+                    <div class="notification-summary-item summary-danger"
+
+                         id="outCount">
+
+                        Out of Stock: 0
+
+                    </div>
+
+                    <div class="notification-summary-item summary-info"
+
+                         id="pendingCount">
+
+                        Pending Orders: 0
+
+                    </div>
+
+                </div>
+
+                <div class="notification-list"
+
+                     id="notificationList">
+
+                    <div class="notification-item stock-alert"
+
+                         th:each="product : ${stockAlerts}"
+
+                         th:attr="data-stock=${product.stockQuantity != null ? product.stockQuantity : 0},
+
+                                  data-name=${product.name},
+
+                                  data-sku=${product.sku}">
+
+                        <div class="notification-icon notification-icon-low">
+
+                            <img src="/images/low-stock.png"
+
+                                 alt="Stock Alert">
+
+                        </div>
+
+                        <div class="notification-content">
+
+                            <div class="notification-heading">
+
+                                Stock Alert
+
+                            </div>
+
+                            <div class="notification-text">
+
+                                <span class="notification-product-name"
+
+                                      th:text="${product.name}">
+
+                                    Product
+
+                                </span>
+
+                                has
+
+                                <strong class="notification-stock-value"
+
+                                        th:text="${product.stockQuantity != null ? product.stockQuantity : 0}">
+
+                                    0
+
+                                </strong>
+
+                                units remaining.
+
+                                SKU:
+
+                                <span th:text="${product.sku}">
+
+                                    SKU
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <a href="/inventory"
+
+                           class="notification-action">
+
+                            View Inventory
+
+                        </a>
+
+                    </div>
+
+                    <div class="notification-item pending-order-alert"
+
+                         th:each="order : ${pendingOrders}">
+
+                        <div class="notification-icon notification-icon-order">
+
+                            <img src="/images/orders.png"
+
+                                 alt="Pending Order">
+
+                        </div>
+
+                        <div class="notification-content">
+
+                            <div class="notification-heading">
+
+                                Pending Order
+
+                            </div>
+
+                            <div class="notification-text">
+
+                                Order
+
+                                <strong th:text="${order.orderNumber}">
+
+                                    ORD-001
+
+                                </strong>
+
+                                is waiting for completion.
+
+                            </div>
+
+                        </div>
+
+                        <a th:href="@{/orders/view/{id}(id=${order.id})}"
+
+                           class="notification-action">
+
+                            View Order
+
+                        </a>
+
+                    </div>
+
+                    <div class="notifications-empty"
+
+                         id="notificationsEmpty"
+
+                         style="display:none;">
+
+                        <img src="/images/notification.png"
+
+                             alt="Notifications">
+
+                        <div class="notifications-empty-title">
+
+                            No active notifications
+
+                        </div>
+
+                        <div class="notifications-empty-text">
+
+                            Your inventory and orders currently need no attention.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="notifications-empty notifications-disabled"
+
+                     id="notificationsDisabled">
+
+                    <img src="/images/settings.png"
+
+                         alt="Settings">
+
+                    <div class="notifications-empty-title">
+
+                        Notifications are disabled
+
+                    </div>
+
+                    <div class="notifications-empty-text">
+
+                        Enable notifications from Settings to view alerts.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const list = document.getElementById("notificationList");
+
+        const empty = document.getElementById("notificationsEmpty");
+
+        const disabled = document.getElementById("notificationsDisabled");
+
+        const lowCount = document.getElementById("lowCount");
+
+        const outCount = document.getElementById("outCount");
+
+        const pendingCount = document.getElementById("pendingCount");
+
+        const count = document.getElementById("notificationCount");
+
+        const saved =
+
+            JSON.parse(localStorage.getItem("stockProSettings") || "null") || {};
+
+        const searchInput = document.querySelector(".search-box input");
+
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                const query = this.value.trim().toLowerCase();
+                const items = document.querySelectorAll(
+                    ".notification-item.stock-alert, .notification-item.pending-order-alert"
+                );
+
+                items.forEach(function (item) {
+                    const text = item.textContent.toLowerCase();
+                    item.style.display = text.includes(query) ? "flex" : "none";
+                });
+            });
+        }
+
+        const threshold =
+
+            Math.max(1, Math.min(100, Number(saved.lowStockThreshold) || 10));
+
+        const notificationsEnabled =
+
+            saved.notificationsEnabled !== false;
+
+        if (!notificationsEnabled) {
+
+            list.style.display = "none";
+
+            document.querySelector(".notification-summary").style.display = "none";
+
+            disabled.style.display = "block";
+
+            count.textContent = "Disabled";
+
+            return;
+
+        }
+
+        const stockAlerts =
+
+            Array.from(document.querySelectorAll(".stock-alert"));
+
+        const pendingAlerts =
+
+            Array.from(document.querySelectorAll(".pending-order-alert"));
+
+        let lowStock = 0;
+
+        let outOfStock = 0;
+
+        stockAlerts.forEach(function (item) {
+
+            const stock =
+
+                Number(item.getAttribute("data-stock")) || 0;
+
+            const isOutOfStock = stock === 0;
+
+            const isLowStock = stock > 0 && stock <= threshold;
+
+            if (isOutOfStock) {
+
+                outOfStock++;
+
+                item.querySelector(".notification-icon")
+
+                    .classList.remove("notification-icon-low");
+
+                item.querySelector(".notification-icon")
+
+                    .classList.add("notification-icon-out");
+
+                item.querySelector("img").src = "/images/out-of-stock.png";
+
+                item.querySelector(".notification-heading").textContent =
+
+                    "Out of Stock";
+
+            } else if (isLowStock) {
+
+                lowStock++;
+
+            } else {
+
+                item.remove();
+
+            }
+
+        });
+
+        const visibleStock =
+
+            document.querySelectorAll(".stock-alert").length;
+
+        const pendingCountValue = pendingAlerts.length;
+
+        lowCount.textContent = "Low Stock: " + lowStock;
+
+        outCount.textContent = "Out of Stock: " + outOfStock;
+
+        pendingCount.textContent = "Pending Orders: " + pendingCountValue;
+
+        const totalAlerts =
+
+            lowStock + outOfStock + pendingCountValue;
+
+        count.textContent =
+
+            totalAlerts + (totalAlerts === 1 ? " Alert" : " Alerts");
+
+        if (totalAlerts === 0) {
+
+            empty.style.display = "block";
+
+        }
+
+    });
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const badge =
+        document.getElementById("notificationBadge");
+
+    if (!badge) {
+        return;
+    }
+
+    function updateNotificationBadge() {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem("stockProSettings") || "null"
+            ) || {};
+
+        if (saved.notificationsEnabled === false) {
+            badge.style.display = "none";
+            return;
+        }
+
+        const threshold =
+            Math.max(
+                1,
+                Math.min(
+                    100,
+                    Number(saved.lowStockThreshold) || 10
+                )
+            );
+
+        fetch("/notifications", {
+            method: "GET",
+            cache: "no-store"
+        })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("Unable to load notifications");
+            }
+            return response.text();
+        })
+        .then(function (html) {
+
+            const parser = new DOMParser();
+
+            const notificationPage =
+                parser.parseFromString(html, "text/html");
+
+            let notificationCount = 0;
+
+            const stockAlerts =
+                notificationPage.querySelectorAll(".stock-alert");
+
+            stockAlerts.forEach(function (item) {
+
+                const stock =
+                    Number(
+                        item.getAttribute("data-stock")
+                    ) || 0;
+
+                if (
+                    stock === 0 ||
+                    (stock > 0 && stock <= threshold)
+                ) {
+                    notificationCount++;
+                }
+            });
+
+            const pendingOrders =
+                notificationPage.querySelectorAll(
+                    ".pending-order-alert"
+                );
+
+            notificationCount += pendingOrders.length;
+
+            if (notificationCount > 0) {
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+
+        })
+        .catch(function (error) {
+
+            console.error(
+                "Notification badge error:",
+                error
+            );
+
+            badge.style.display = "none";
+        });
+    }
+
+    updateNotificationBadge();
+
+    setInterval(
+        updateNotificationBadge,
+        30000
+    );
+
+});
+</script>
+
+</body>
+
+</html>

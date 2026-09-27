@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+
+<html lang="en"
+
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Reports | StockPro</title>
+
+    <link rel="stylesheet"
+
+          th:href="@{/css/style.css}">
+
+    <style>
+
+        /* =====================================================
+
+           REPORTS PAGE
+
+        ===================================================== */
+
+        .reports-page {
+
+            width: 100%;
+
+        }
+
+        /* =====================================================
+
+           KPI GRID
+
+        ===================================================== */
+
+        .reports-kpi-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 24px;
+
+        }
+
+        .reports-kpi-card {
+
+            min-height: 105px;
+
+            padding: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            border: 1px solid #e4eaf1;
+
+            border-radius: 10px;
+
+            background: #ffffff;
+
+            box-shadow: 0 2px 8px rgba(23, 43, 77, 0.04);
+
+        }
+
+        .reports-kpi-icon {
+
+            width: 48px;
+
+            height: 48px;
+
+            border-radius: 9px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #eef5ff;
+
+            flex-shrink: 0;
+
+        }
+
+        .reports-kpi-icon img {
+
+            width: 28px;
+
+            height: 28px;
+
+            object-fit: contain;
+
+        }
+
+        .reports-kpi-label {
+
+            color: #718096;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+        }
+
+        .reports-kpi-value {
+
+            margin-top: 4px;
+
+            color: #172b4d;
+
+            font-size: 20px;
+
+            font-weight: 700;
+
+        }
+
+        /* =====================================================
+
+           SECONDARY STATS
+
+        ===================================================== */
+
+        .reports-secondary-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 24px;
+
+        }
+
+        .reports-secondary-card {
+
+            padding: 17px 18px;
+
+            border: 1px solid #e4eaf1;
+
+            border-radius: 9px;
+
+            background: #ffffff;
+
+        }
+
+        .reports-secondary-label {
+
+            color: #718096;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+        }
+
+        .reports-secondary-value {
+
+            margin-top: 6px;
+
+            color: #172b4d;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+        }
+
+        .reports-secondary-note {
+
+            margin-top: 4px;
+
+            color: #8a97aa;
+
+            font-size: 10px;
+
+        }
+
+        .reports-pending {
+
+            color: #a66b00;
+
+        }
+
+        .reports-completed {
+
+            color: #21844a;
+
+        }
+
+        .reports-cancelled {
+
+            color: #c43d3d;
+
+        }
+
+        /* =====================================================
+
+           OVERVIEW GRID
+
+        ===================================================== */
+
+        .reports-overview-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 24px;
+
+            margin-bottom: 24px;
+
+        }
+
+        .reports-overview-card {
+
+            min-width: 0;
+
+        }
+
+        .reports-card-header {
+
+            padding: 19px 22px;
+
+            border-bottom: 1px solid #e4eaf1;
+
+        }
+
+        .reports-card-title {
+
+            margin: 0;
+
+            color: #172b4d;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+        }
+
+        .reports-card-description {
+
+            margin: 5px 0 0;
+
+            color: #718096;
+
+            font-size: 11px;
+
+        }
+
+        .reports-card-body {
+
+            padding: 20px 22px;
+
+        }
+
+        /* =====================================================
+
+           STOCK SUMMARY
+
+        ===================================================== */
+
+        .reports-stock-row {
+
+            margin-bottom: 19px;
+
+        }
+
+        .reports-stock-row:last-child {
+
+            margin-bottom: 0;
+
+        }
+
+        .reports-stock-top {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+
+        }
+
+        .reports-stock-label {
+
+            color: #344563;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+        }
+
+        .reports-stock-value {
+
+            color: #172b4d;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+        }
+
+        .reports-progress {
+
+            width: 100%;
+
+            height: 7px;
+
+            overflow: hidden;
+
+            border-radius: 20px;
+
+            background: #edf1f5;
+
+        }
+
+        .reports-progress-bar {
+
+            height: 100%;
+
+            border-radius: 20px;
+
+            background: #1677e8;
+
+        }
+
+        .reports-progress-low {
+
+            background: #d59a22;
+
+        }
+
+        .reports-progress-out {
+
+            background: #d14343;
+
+        }
+
+        /* =====================================================
+
+           ORDER STATUS
+
+        ===================================================== */
+
+        .reports-status-list {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 16px;
+
+        }
+
+        .reports-status-row {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding-bottom: 14px;
+
+            border-bottom: 1px solid #edf1f5;
+
+        }
+
+        .reports-status-row:last-child {
+
+            padding-bottom: 0;
+
+            border-bottom: none;
+
+        }
+
+        .reports-status-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+        }
+
+        .reports-status-dot {
+
+            width: 9px;
+
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: #1677e8;
+
+        }
+
+        .reports-status-dot.pending {
+
+            background: #d59a22;
+
+        }
+
+        .reports-status-dot.completed {
+
+            background: #25844c;
+
+        }
+
+        .reports-status-dot.cancelled {
+
+            background: #d14343;
+
+        }
+
+        .reports-status-name {
+
+            color: #344563;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+        }
+
+        .reports-status-count {
+
+            color: #172b4d;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+        }
+
+        /* =====================================================
+
+           RECENT ORDERS
+
+        ===================================================== */
+
+        .reports-recent-header {
+
+            min-height: 70px;
+
+            padding: 18px 22px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            border-bottom: 1px solid #e4eaf1;
+
+        }
+
+        .reports-recent-title {
+
+            margin: 0;
+
+            color: #172b4d;
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+        }
+
+        .reports-recent-description {
+
+            margin: 5px 0 0;
+
+            color: #718096;
+
+            font-size: 11px;
+
+        }
+
+        .reports-table-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
+        .reports-table {
+
+            width: 100%;
+
+            min-width: 850px;
+
+            border-collapse: collapse;
+
+        }
+
+        .reports-table th {
+
+            height: 46px;
+
+            padding: 0 16px;
+
+            background: #f7f9fc;
+
+            border-bottom: 1px solid #e4eaf1;
+
+            color: #64748b;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            text-transform: uppercase;
+
+            white-space: nowrap;
+
+        }
+
+        .reports-table td {
+
+            padding: 14px 16px;
+
+            border-bottom: 1px solid #edf1f5;
+
+            color: #344563;
+
+            font-size: 11px;
+
+            vertical-align: middle;
+
+        }
+
+        .reports-table tbody tr:hover {
+
+            background: #fafcff;
+
+        }
+
+        .reports-order-number {
+
+            color: #1677e8;
+
+            font-weight: 700;
+
+        }
+
+        .reports-customer {
+
+            color: #172b4d;
+
+            font-weight: 600;
+
+        }
+
+        .reports-date {
+
+            color: #718096;
+
+            white-space: nowrap;
+
+        }
+
+        .reports-amount {
+
+            color: #172b4d;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+        }
+
+        /* =====================================================
+
+           STATUS BADGE
+
+        ===================================================== */
+
+        .reports-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            min-height: 24px;
+
+            padding: 0 9px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+        }
+
+        .reports-status-pending {
+
+            background: #fff6df;
+
+            color: #a66b00;
+
+        }
+
+        .reports-status-completed {
+
+            background: #e9f8ef;
+
+            color: #21844a;
+
+        }
+
+        .reports-status-cancelled {
+
+            background: #fff0f0;
+
+            color: #c43d3d;
+
+        }
+
+        .reports-status-default {
+
+            background: #eef2f7;
+
+            color: #64748b;
+
+        }
+
+        /* =====================================================
+
+           ACTION
+
+        ===================================================== */
+
+        .reports-view {
+
+            height: 29px;
+
+            padding: 0 10px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 6px;
+
+            background: #eef4fb;
+
+            color: #1677e8;
+
+            text-decoration: none;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+        }
+
+        .reports-view:hover {
+
+            background: #dfeeff;
+
+        }
+
+        /* =====================================================
+
+           EMPTY
+
+        ===================================================== */
+
+        .reports-empty {
+
+            padding: 40px 20px;
+
+            text-align: center;
+
+        }
+
+        .reports-empty img {
+
+            width: 42px;
+
+            height: 42px;
+
+            margin-bottom: 9px;
+
+            opacity: 0.45;
+
+        }
+
+        .reports-empty-title {
+
+            color: #344563;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+        }
+
+        .reports-empty-text {
+
+            margin-top: 5px;
+
+            color: #8a97aa;
+
+            font-size: 11px;
+
+        }
+
+        /* =====================================================
+
+           RESPONSIVE
+
+        ===================================================== */
+
+        @media (max-width: 1100px) {
+
+            .reports-kpi-grid {
+
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            }
+
+            .reports-secondary-grid {
+
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            }
+
+        }
+
+        @media (max-width: 850px) {
+
+            .reports-overview-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .reports-kpi-grid,
+
+            .reports-secondary-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================================
+
+         SIDEBAR
+
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="logo">
+
+            <img src="/images/logo.png"
+
+                 alt="StockPro"
+
+                 class="logo-image">
+
+            <div>
+
+                <div class="logo-text">
+
+                    StockPro
+
+                </div>
+
+                <div class="logo-subtitle">
+
+                    Inventory &amp; Order Management
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <nav class="nav">
+
+
+            <!-- MAIN -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    MAIN
+
+                </div>
+
+
+                <a href="/"
+
+                   class="nav-link">
+
+                    <img src="/images/dashboard.png"
+
+                         class="nav-icon"
+
+                         alt="Dashboard">
+
+                    <span>Dashboard</span>
+
+                </a>
+
+
+                <a href="/products"
+
+                   class="nav-link">
+
+                    <img src="/images/products.png"
+
+                         class="nav-icon"
+
+                         alt="Products">
+
+                    <span>Products</span>
+
+                </a>
+
+
+                <a href="/categories"
+
+                   class="nav-link">
+
+                    <img src="/images/categories.png"
+
+                         class="nav-icon"
+
+                         alt="Categories">
+
+                    <span>Categories</span>
+
+                </a>
+
+
+                <a href="/suppliers"
+
+                   class="nav-link">
+
+                    <img src="/images/suppliers.png"
+
+                         class="nav-icon"
+
+                         alt="Suppliers">
+
+                    <span>Suppliers</span>
+
+                </a>
+
+
+                <a href="/customers"
+
+                   class="nav-link">
+
+                    <img src="/images/customers.png"
+
+                         class="nav-icon"
+
+                         alt="Customers">
+
+                    <span>Customers</span>
+
+                </a>
+
+
+                <a href="/orders"
+
+                   class="nav-link">
+
+                    <img src="/images/orders.png"
+
+                         class="nav-icon"
+
+                         alt="Orders">
+
+                    <span>Orders</span>
+
+                </a>
+
+
+                <a href="/inventory"
+
+                   class="nav-link">
+
+                    <img src="/images/inventory.png"
+
+                         class="nav-icon"
+
+                         alt="Inventory">
+
+                    <span>Inventory</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- ANALYTICS -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    ANALYTICS
+
+                </div>
+
+
+                <a href="/sales"
+
+                   class="nav-link">
+
+                    <img src="/images/sales.png"
+
+                         class="nav-icon"
+
+                         alt="Sales">
+
+                    <span>Sales</span>
+
+                </a>
+
+
+                <a href="/reports"
+
+                   class="nav-link active">
+
+                    <img src="/images/reports.png"
+
+                         class="nav-icon"
+
+                         alt="Reports">
+
+                    <span>Reports</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- SYSTEM -->
+
+			<div class="nav-section">
+
+			    <div class="nav-title">SYSTEM</div>
+
+			    <a href="/settings" class="nav-link">
+
+			        <img src="/images/settings.png"
+			             class="nav-icon"
+			             alt="Settings">
+
+			        <span>Settings</span>
+
+			    </a>
+
+			</div>
+
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <div class="user-card">
+
+                <img src="/images/avatar.png"
+
+                     class="user-avatar"
+
+                     alt="User">
+
+                <div>
+
+                    <div class="user-name">
+
+                        Dinesh
+
+                    </div>
+
+                    <div class="user-role">
+
+                        Administrator
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =====================================================
+
+         MAIN
+
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <div class="search-box">
+
+                <img src="/images/search.png"
+
+                     class="search-icon"
+
+                     alt="Search">
+
+                <input type="text"
+
+                       placeholder="Search reports...">
+
+            </div>
+
+
+            <div class="topbar-right">
+
+
+				<a href="/notifications"
+				   class="notification"
+				   aria-label="Notifications">
+
+				    <img src="/images/notification.png"
+				         alt="Notifications">
+
+				    <span class="notification-dot"
+				          id="notificationBadge"></span>
+
+				</a>
+
+
+                <div class="top-user">
+
+                    <img src="/images/avatar.png"
+
+                         alt="User">
+
+                    <div>
+
+                        <div class="top-user-name">
+
+                            Dinesh
+
+                        </div>
+
+                        <div class="top-user-role">
+
+                            Administrator
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+
+             CONTENT
+
+        ====================================================== -->
+
+        <section class="content reports-page">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1 class="page-title">
+
+                        Reports
+
+                    </h1>
+
+                    <p class="page-description">
+
+                        Business overview, order performance and inventory insights.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+
+                 MAIN KPI CARDS
+
+            ================================================== -->
+
+            <div class="reports-kpi-grid">
+
+
+                <!-- SALES -->
+
+                <div class="reports-kpi-card">
+
+                    <div class="reports-kpi-icon">
+
+                        <img src="/images/sales.png"
+
+                             alt="Sales">
+
+                    </div>
+
+                    <div>
+
+                        <div class="reports-kpi-label">
+
+                            Total Sales
+
+                        </div>
+
+                        <div class="reports-kpi-value">
+
+                            ₹<span th:text="${totalSales != null
+
+                                             ? #numbers.formatDecimal(totalSales, 1, 2)
+
+                                             : '0.00'}">
+
+                                0.00
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ORDERS -->
+
+                <div class="reports-kpi-card">
+
+                    <div class="reports-kpi-icon">
+
+                        <img src="/images/orders.png"
+
+                             alt="Orders">
+
+                    </div>
+
+                    <div>
+
+                        <div class="reports-kpi-label">
+
+                            Total Orders
+
+                        </div>
+
+                        <div class="reports-kpi-value"
+
+                             th:text="${totalOrders}">
+
+                            0
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PRODUCTS -->
+
+                <div class="reports-kpi-card">
+
+                    <div class="reports-kpi-icon">
+
+                        <img src="/images/products.png"
+
+                             alt="Products">
+
+                    </div>
+
+                    <div>
+
+                        <div class="reports-kpi-label">
+
+                            Total Products
+
+                        </div>
+
+                        <div class="reports-kpi-value"
+
+                             th:text="${totalProducts}">
+
+                            0
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CUSTOMERS -->
+
+                <div class="reports-kpi-card">
+
+                    <div class="reports-kpi-icon">
+
+                        <img src="/images/customers.png"
+
+                             alt="Customers">
+
+                    </div>
+
+                    <div>
+
+                        <div class="reports-kpi-label">
+
+                            Total Customers
+
+                        </div>
+
+                        <div class="reports-kpi-value"
+
+                             th:text="${totalCustomers}">
+
+                            0
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+
+                 SECONDARY STATS
+
+            ================================================== -->
+
+            <div class="reports-secondary-grid">
+
+
+                <div class="reports-secondary-card">
+
+                    <div class="reports-secondary-label">
+
+                        Pending Orders
+
+                    </div>
+
+                    <div class="reports-secondary-value reports-pending"
+
+                         th:text="${pendingOrders}">
+
+                        0
+
+                    </div>
+
+                    <div class="reports-secondary-note">
+
+                        Orders awaiting completion
+
+                    </div>
+
+                </div>
+
+
+                <div class="reports-secondary-card">
+
+                    <div class="reports-secondary-label">
+
+                        Completed Orders
+
+                    </div>
+
+                    <div class="reports-secondary-value reports-completed"
+
+                         th:text="${completedOrders}">
+
+                        0
+
+                    </div>
+
+                    <div class="reports-secondary-note">
+
+                        Successfully completed
+
+                    </div>
+
+                </div>
+
+
+                <div class="reports-secondary-card">
+
+                    <div class="reports-secondary-label">
+
+                        Cancelled Orders
+
+                    </div>
+
+                    <div class="reports-secondary-value reports-cancelled"
+
+                         th:text="${cancelledOrders}">
+
+                        0
+
+                    </div>
+
+                    <div class="reports-secondary-note">
+
+                        Cancelled transactions
+
+                    </div>
+
+                </div>
+
+
+                <div class="reports-secondary-card">
+
+                    <div class="reports-secondary-label">
+
+                        Total Suppliers
+
+                    </div>
+
+                    <div class="reports-secondary-value"
+
+                         th:text="${totalSuppliers}">
+
+                        0
+
+                    </div>
+
+                    <div class="reports-secondary-note">
+
+                        Registered suppliers
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+
+                 OVERVIEW
+
+            ================================================== -->
+
+            <div class="reports-overview-grid">
+
+
+                <!-- STOCK OVERVIEW -->
+
+                <div class="card reports-overview-card">
+
+
+                    <div class="reports-card-header">
+
+                        <h2 class="reports-card-title">
+
+                            Inventory Overview
+
+                        </h2>
+
+                        <p class="reports-card-description">
+
+                            Current stock health across products.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="reports-card-body">
+
+
+                        <!-- LOW STOCK -->
+
+                        <div class="reports-stock-row">
+
+                            <div class="reports-stock-top">
+
+                                <span class="reports-stock-label">
+
+                                    Low Stock Items
+
+                                </span>
+
+                                <span class="reports-stock-value"
+
+                                      th:text="${lowStockItems}">
+
+                                    0
+
+                                </span>
+
+                            </div>
+
+                            <div class="reports-progress">
+
+                                <div class="reports-progress-bar reports-progress-low"
+
+                                     th:style="'width:' + (${totalProducts} > 0 ? (${lowStockItems} * 100 / ${totalProducts}) : 0) + '%'">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- OUT OF STOCK -->
+
+                        <div class="reports-stock-row">
+
+                            <div class="reports-stock-top">
+
+                                <span class="reports-stock-label">
+
+                                    Out of Stock Items
+
+                                </span>
+
+                                <span class="reports-stock-value"
+
+                                      th:text="${outOfStockItems}">
+
+                                    0
+
+                                </span>
+
+                            </div>
+
+                            <div class="reports-progress">
+
+                                <div class="reports-progress-bar reports-progress-out"
+
+                                     th:style="'width:' + (${totalProducts} > 0 ? (${outOfStockItems} * 100 / ${totalProducts}) : 0) + '%'">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- AVAILABLE -->
+
+                        <div class="reports-stock-row">
+
+                            <div class="reports-stock-top">
+
+                                <span class="reports-stock-label">
+
+                                    Available Products
+
+                                </span>
+
+                                <span class="reports-stock-value"
+
+                                      th:text="${totalProducts - lowStockItems - outOfStockItems}">
+
+                                    0
+
+                                </span>
+
+                            </div>
+
+                            <div class="reports-progress">
+
+                                <div class="reports-progress-bar"
+
+                                     th:style="'width:' + (${totalProducts} > 0 ? ((${totalProducts} - ${lowStockItems} - ${outOfStockItems}) * 100 / ${totalProducts}) : 0) + '%'">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ORDER STATUS -->
+
+                <div class="card reports-overview-card">
+
+
+                    <div class="reports-card-header">
+
+                        <h2 class="reports-card-title">
+
+                            Order Status
+
+                        </h2>
+
+                        <p class="reports-card-description">
+
+                            Current order distribution.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="reports-card-body">
+
+
+                        <div class="reports-status-list">
+
+
+                            <!-- PENDING -->
+
+                            <div class="reports-status-row">
+
+                                <div class="reports-status-left">
+
+                                    <span class="reports-status-dot pending"></span>
+
+                                    <span class="reports-status-name">
+
+                                        Pending
+
+                                    </span>
+
+                                </div>
+
+                                <span class="reports-status-count"
+
+                                      th:text="${pendingOrders}">
+
+                                    0
+
+                                </span>
+
+                            </div>
+
+
+                            <!-- COMPLETED -->
+
+                            <div class="reports-status-row">
+
+                                <div class="reports-status-left">
+
+                                    <span class="reports-status-dot completed"></span>
+
+                                    <span class="reports-status-name">
+
+                                        Completed
+
+                                    </span>
+
+                                </div>
+
+                                <span class="reports-status-count"
+
+                                      th:text="${completedOrders}">
+
+                                    0
+
+                                </span>
+
+                            </div>
+
+
+                            <!-- CANCELLED -->
+
+                            <div class="reports-status-row">
+
+                                <div class="reports-status-left">
+
+                                    <span class="reports-status-dot cancelled"></span>
+
+                                    <span class="reports-status-name">
+
+                                        Cancelled
+
+                                    </span>
+
+                                </div>
+
+                                <span class="reports-status-count"
+
+                                      th:text="${cancelledOrders}">
+
+                                    0
+
+                                </span>
+
+                            </div>
+
+
+                            <!-- TOTAL -->
+
+                            <div class="reports-status-row">
+
+                                <div class="reports-status-left">
+
+                                    <span class="reports-status-dot"></span>
+
+                                    <span class="reports-status-name">
+
+                                        Total Orders
+
+                                    </span>
+
+                                </div>
+
+                                <span class="reports-status-count"
+
+                                      th:text="${totalOrders}">
+
+                                    0
+
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+
+                 RECENT ORDERS
+
+            ================================================== -->
+
+            <div class="card">
+
+
+                <div class="reports-recent-header">
+
+                    <div>
+
+                        <h2 class="reports-recent-title">
+
+                            Recent Orders
+
+                        </h2>
+
+                        <p class="reports-recent-description">
+
+                            Latest transactions recorded in the system.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="reports-table-wrapper">
+
+
+                    <table class="reports-table">
+
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+
+                                Order
+
+                            </th>
+
+                            <th>
+
+                                Customer
+
+                            </th>
+
+                            <th>
+
+                                Date
+
+                            </th>
+
+                            <th>
+
+                                Status
+
+                            </th>
+
+                            <th>
+
+                                Total
+
+                            </th>
+
+                            <th>
+
+                                Action
+
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                        <tr th:each="order : ${recentOrders}">
+
+
+                            <td>
+
+                                <span class="reports-order-number"
+
+                                      th:text="${order.orderNumber}">
+
+                                    ORD-001
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="reports-customer"
+
+                                      th:text="${order.customer != null
+
+                                                ? order.customer.name
+
+                                                : 'Unknown'}">
+
+                                    Customer
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="reports-date"
+
+                                      th:text="${order.orderDate != null
+
+                                                ? #temporals.format(order.orderDate, 'dd MMM yyyy HH:mm')
+
+                                                : 'Not available'}">
+
+                                    01 Jan 2026
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+
+                                <span class="reports-status reports-status-pending"
+
+                                      th:if="${order.status != null
+
+                                              and order.status.toString().equalsIgnoreCase('PENDING')}"
+
+                                      th:text="${order.status}">
+
+                                    Pending
+
+                                </span>
+
+
+                                <span class="reports-status reports-status-completed"
+
+                                      th:if="${order.status != null
+
+                                              and order.status.toString().equalsIgnoreCase('COMPLETED')}"
+
+                                      th:text="${order.status}">
+
+                                    Completed
+
+                                </span>
+
+
+                                <span class="reports-status reports-status-cancelled"
+
+                                      th:if="${order.status != null
+
+                                              and order.status.toString().equalsIgnoreCase('CANCELLED')}"
+
+                                      th:text="${order.status}">
+
+                                    Cancelled
+
+                                </span>
+
+
+                                <span class="reports-status reports-status-default"
+
+                                      th:if="${order.status == null
+
+                                              or (!order.status.toString().equalsIgnoreCase('PENDING')
+
+                                              and !order.status.toString().equalsIgnoreCase('COMPLETED')
+
+                                              and !order.status.toString().equalsIgnoreCase('CANCELLED'))}"
+
+                                      th:text="${order.status != null
+
+                                                ? order.status
+
+                                                : 'Unknown'}">
+
+                                    Unknown
+
+                                </span>
+
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="reports-amount">
+
+                                    ₹<span th:text="${order.totalAmount != null
+
+                                                     ? #numbers.formatDecimal(order.totalAmount, 1, 2)
+
+                                                     : '0.00'}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <a th:href="@{/orders/view/{id}(id=${order.id})}"
+
+                                   class="reports-view">
+
+                                    View
+
+                                </a>
+
+                            </td>
+
+
+                        </tr>
+
+
+                        <tr th:if="${recentOrders == null or #lists.isEmpty(recentOrders)}">
+
+                            <td colspan="6">
+
+
+                                <div class="reports-empty">
+
+                                    <img src="/images/reports.png"
+
+                                         alt="Reports">
+
+                                    <div class="reports-empty-title">
+
+                                        No recent orders
+
+                                    </div>
+
+                                    <div class="reports-empty-text">
+
+                                        Recent order information will appear here.
+
+                                    </div>
+
+                                </div>
+
+
+                            </td>
+
+                        </tr>
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchInput = document.querySelector(".search-box input");
+
+        if (!searchInput) {
+            return;
+        }
+
+        const rows = document.querySelectorAll(".reports-table tbody tr");
+
+        searchInput.addEventListener("input", function () {
+
+            const searchText = this.value.toLowerCase().trim();
+
+            rows.forEach(function (row) {
+
+                const isEmptyRow =
+                    row.querySelector(".reports-empty") !== null;
+
+                if (isEmptyRow) {
+                    return;
+                }
+
+                const rowText =
+                    row.textContent
+                        .toLowerCase()
+                        .replace(/\s+/g, " ")
+                        .trim();
+
+                row.style.display =
+                    searchText === "" || rowText.includes(searchText)
+                        ? ""
+                        : "none";
+            });
+        });
+    });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const badge =
+        document.getElementById("notificationBadge");
+
+    if (!badge) {
+        return;
+    }
+
+    function updateNotificationBadge() {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem("stockProSettings") || "null"
+            ) || {};
+
+        if (saved.notificationsEnabled === false) {
+            badge.style.display = "none";
+            return;
+        }
+
+        const threshold =
+            Math.max(
+                1,
+                Math.min(
+                    100,
+                    Number(saved.lowStockThreshold) || 10
+                )
+            );
+
+        fetch("/notifications", {
+            method: "GET",
+            cache: "no-store"
+        })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("Unable to load notifications");
+            }
+            return response.text();
+        })
+        .then(function (html) {
+
+            const parser = new DOMParser();
+
+            const notificationPage =
+                parser.parseFromString(html, "text/html");
+
+            let notificationCount = 0;
+
+            const stockAlerts =
+                notificationPage.querySelectorAll(".stock-alert");
+
+            stockAlerts.forEach(function (item) {
+
+                const stock =
+                    Number(
+                        item.getAttribute("data-stock")
+                    ) || 0;
+
+                if (
+                    stock === 0 ||
+                    (stock > 0 && stock <= threshold)
+                ) {
+                    notificationCount++;
+                }
+            });
+
+            const pendingOrders =
+                notificationPage.querySelectorAll(
+                    ".pending-order-alert"
+                );
+
+            notificationCount += pendingOrders.length;
+
+            if (notificationCount > 0) {
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+
+        })
+        .catch(function (error) {
+
+            console.error(
+                "Notification badge error:",
+                error
+            );
+
+            badge.style.display = "none";
+        });
+    }
+
+    updateNotificationBadge();
+
+    setInterval(
+        updateNotificationBadge,
+        30000
+    );
+
+});
+</script>
+
+</body>
+
+</html>

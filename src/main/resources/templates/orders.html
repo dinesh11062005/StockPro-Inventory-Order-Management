@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+
+<html lang="en"
+
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Orders | StockPro</title>
+
+    <link rel="stylesheet"
+
+          th:href="@{/css/style.css}">
+
+    <style>
+
+        /* =====================================================
+
+           ORDERS PAGE
+
+        ===================================================== */
+
+        .orders-page {
+
+            width: 100%;
+
+        }
+
+        /* =====================================================
+
+           ORDER FORM
+
+        ===================================================== */
+
+        .order-form-card {
+
+            margin-bottom: 24px;
+
+        }
+
+        .order-form-header {
+
+            padding: 20px 22px;
+
+            border-bottom: 1px solid #e4eaf1;
+
+        }
+
+        .order-form-title {
+
+            margin: 0;
+
+            color: #172b4d;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+        }
+
+        .order-form-description {
+
+            margin: 5px 0 0;
+
+            color: #718096;
+
+            font-size: 12px;
+
+        }
+
+        .order-form-body {
+
+            padding: 24px;
+
+        }
+
+        .order-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            gap: 20px;
+
+        }
+
+        .order-field {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+
+        }
+
+        .order-field label {
+
+            color: #344563;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+        }
+
+        .order-field input,
+
+        .order-field select,
+
+        .order-field textarea {
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            border: 1px solid #d9e2ec;
+
+            border-radius: 7px;
+
+            background: #ffffff;
+
+            color: #172b4d;
+
+            font-family: inherit;
+
+            font-size: 12px;
+
+            outline: none;
+
+            transition: 0.2s ease;
+
+        }
+
+        .order-field input,
+
+        .order-field select {
+
+            height: 40px;
+
+            padding: 0 12px;
+
+        }
+
+        .order-field textarea {
+
+            min-height: 90px;
+
+            padding: 11px 12px;
+
+            resize: vertical;
+
+            line-height: 1.5;
+
+        }
+
+        .order-field input:focus,
+
+        .order-field select:focus,
+
+        .order-field textarea:focus {
+
+            border-color: #1677e8;
+
+            box-shadow: 0 0 0 3px rgba(22, 119, 232, 0.10);
+
+        }
+
+        .order-field-full {
+
+            grid-column: 1 / -1;
+
+        }
+
+        /* =====================================================
+
+           ORDER ITEM SECTION
+
+        ===================================================== */
+
+        .order-items-section {
+
+            grid-column: 1 / -1;
+
+            margin-top: 2px;
+
+            padding: 20px;
+
+            border: 1px solid #e4eaf1;
+
+            border-radius: 9px;
+
+            background: #fafcff;
+
+        }
+
+        .order-items-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 16px;
+
+        }
+
+        .order-items-title {
+
+            margin: 0;
+
+            color: #172b4d;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+        }
+
+        .order-items-description {
+
+            margin: 4px 0 0;
+
+            color: #718096;
+
+            font-size: 11px;
+
+        }
+
+        .order-item-row {
+
+            display: grid;
+
+            grid-template-columns: minmax(0, 2fr) 120px 150px;
+
+            gap: 12px;
+
+            align-items: end;
+
+            padding: 16px;
+
+            border: 1px solid #e4eaf1;
+
+            border-radius: 8px;
+
+            background: #ffffff;
+
+        }
+
+        .order-item-field {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+
+        }
+
+        .order-item-field label {
+
+            color: #64748b;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+        }
+
+        .order-item-field select,
+
+        .order-item-field input {
+
+            width: 100%;
+
+            height: 38px;
+
+            box-sizing: border-box;
+
+            padding: 0 10px;
+
+            border: 1px solid #d9e2ec;
+
+            border-radius: 7px;
+
+            background: #ffffff;
+
+            color: #172b4d;
+
+            font-family: inherit;
+
+            font-size: 12px;
+
+            outline: none;
+
+        }
+
+        .order-item-field select:focus,
+
+        .order-item-field input:focus {
+
+            border-color: #1677e8;
+
+            box-shadow: 0 0 0 3px rgba(22, 119, 232, 0.10);
+
+        }
+
+        .order-item-note {
+
+            margin-top: 10px;
+
+            color: #8a97aa;
+
+            font-size: 10px;
+
+        }
+
+        /* =====================================================
+
+           FORM ACTIONS
+
+        ===================================================== */
+
+        .order-form-actions {
+
+            grid-column: 1 / -1;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+        .order-submit {
+
+            height: 38px;
+
+            padding: 0 20px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #1677e8;
+
+            color: #ffffff;
+
+            font-family: inherit;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+        }
+
+        .order-submit:hover {
+
+            background: #075bb5;
+
+        }
+
+        /* =====================================================
+
+           ORDERS LIST
+
+        ===================================================== */
+
+        .orders-list-header {
+
+            min-height: 70px;
+
+            padding: 18px 22px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            border-bottom: 1px solid #e4eaf1;
+
+        }
+
+        .orders-list-title {
+
+            margin: 0;
+
+            color: #172b4d;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+        }
+
+        .orders-list-description {
+
+            margin: 5px 0 0;
+
+            color: #718096;
+
+            font-size: 12px;
+
+        }
+
+        .orders-count {
+
+            color: #718096;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+
+        }
+
+        /* =====================================================
+
+           TABLE
+
+        ===================================================== */
+
+        .orders-table-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
+        .orders-table {
+
+            width: 100%;
+
+            min-width: 1050px;
+
+            border-collapse: collapse;
+
+        }
+
+        .orders-table th {
+
+            height: 48px;
+
+            padding: 0 15px;
+
+            background: #f7f9fc;
+
+            border-bottom: 1px solid #e4eaf1;
+
+            color: #64748b;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            text-transform: uppercase;
+
+            white-space: nowrap;
+
+        }
+
+        .orders-table td {
+
+            padding: 14px 15px;
+
+            border-bottom: 1px solid #edf1f5;
+
+            color: #344563;
+
+            font-size: 11px;
+
+            vertical-align: middle;
+
+        }
+
+        .orders-table tbody tr:hover {
+
+            background: #fafcff;
+
+        }
+
+        /* =====================================================
+
+           ORDER DATA
+
+        ===================================================== */
+
+        .order-number {
+
+            color: #1677e8;
+
+            font-weight: 700;
+
+        }
+
+        .order-customer {
+
+            color: #172b4d;
+
+            font-weight: 600;
+
+        }
+
+        .order-date {
+
+            color: #718096;
+
+            white-space: nowrap;
+
+        }
+
+        .order-amount {
+
+            color: #172b4d;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+        }
+
+        .order-payment {
+
+            color: #64748b;
+
+        }
+
+        /* =====================================================
+
+           STATUS
+
+        ===================================================== */
+
+        .order-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            min-height: 25px;
+
+            padding: 0 9px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+        }
+
+        .order-status-pending {
+
+            background: #fff6df;
+
+            color: #a66b00;
+
+        }
+
+        .order-status-completed {
+
+            background: #e9f8ef;
+
+            color: #21844a;
+
+        }
+
+        .order-status-cancelled {
+
+            background: #fff0f0;
+
+            color: #c43d3d;
+
+        }
+
+        .order-status-processing {
+
+            background: #eaf3ff;
+
+            color: #1677e8;
+
+        }
+
+        .order-status-default {
+
+            background: #eef2f7;
+
+            color: #64748b;
+
+        }
+
+        /* =====================================================
+
+           ACTIONS
+
+        ===================================================== */
+
+        .order-actions {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            white-space: nowrap;
+
+        }
+
+        .order-action {
+
+            height: 29px;
+
+            padding: 0 9px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 6px;
+
+            text-decoration: none;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+        }
+
+        .order-view {
+
+            background: #eef4fb;
+
+            color: #1677e8;
+
+        }
+
+        .order-view:hover {
+
+            background: #dfeeff;
+
+        }
+
+        .order-invoice {
+
+            background: #edf8f1;
+
+            color: #25844c;
+
+        }
+
+        .order-invoice:hover {
+
+            background: #dff1e6;
+
+        }
+
+        .order-delete {
+
+            background: #fff0f0;
+
+            color: #d14343;
+
+        }
+
+        .order-delete:hover {
+
+            background: #ffe1e1;
+
+        }
+
+        /* =====================================================
+
+           EMPTY STATE
+
+        ===================================================== */
+
+        .orders-empty {
+
+            padding: 45px 20px;
+
+            text-align: center;
+
+        }
+
+        .orders-empty img {
+
+            width: 45px;
+
+            height: 45px;
+
+            margin-bottom: 10px;
+
+            opacity: 0.45;
+
+        }
+
+        .orders-empty-title {
+
+            color: #344563;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+        }
+
+        .orders-empty-text {
+
+            margin-top: 5px;
+
+            color: #8a97aa;
+
+            font-size: 11px;
+
+        }
+
+        /* =====================================================
+
+           RESPONSIVE
+
+        ===================================================== */
+
+        @media (max-width: 850px) {
+
+            .order-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .order-field-full {
+
+                grid-column: auto;
+
+            }
+
+            .order-items-section,
+
+            .order-form-actions {
+
+                grid-column: auto;
+
+            }
+
+            .order-item-row {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .orders-list-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================================
+
+         SIDEBAR
+
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <img src="/images/logo.png"
+
+                 alt="StockPro"
+
+                 class="logo-image">
+
+            <div>
+
+                <div class="logo-text">
+
+                    StockPro
+
+                </div>
+
+                <div class="logo-subtitle">
+
+                    Inventory &amp; Order Management
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="nav">
+
+
+            <!-- MAIN -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    MAIN
+
+                </div>
+
+
+                <a href="/"
+
+                   class="nav-link">
+
+                    <img src="/images/dashboard.png"
+
+                         class="nav-icon"
+
+                         alt="Dashboard">
+
+                    <span>Dashboard</span>
+
+                </a>
+
+
+                <a href="/products"
+
+                   class="nav-link">
+
+                    <img src="/images/products.png"
+
+                         class="nav-icon"
+
+                         alt="Products">
+
+                    <span>Products</span>
+
+                </a>
+
+
+                <a href="/categories"
+
+                   class="nav-link">
+
+                    <img src="/images/categories.png"
+
+                         class="nav-icon"
+
+                         alt="Categories">
+
+                    <span>Categories</span>
+
+                </a>
+
+
+                <a href="/suppliers"
+
+                   class="nav-link">
+
+                    <img src="/images/suppliers.png"
+
+                         class="nav-icon"
+
+                         alt="Suppliers">
+
+                    <span>Suppliers</span>
+
+                </a>
+
+
+                <a href="/customers"
+
+                   class="nav-link">
+
+                    <img src="/images/customers.png"
+
+                         class="nav-icon"
+
+                         alt="Customers">
+
+                    <span>Customers</span>
+
+                </a>
+
+
+                <a href="/orders"
+
+                   class="nav-link active">
+
+                    <img src="/images/orders.png"
+
+                         class="nav-icon"
+
+                         alt="Orders">
+
+                    <span>Orders</span>
+
+                </a>
+
+
+                <a href="/inventory"
+
+                   class="nav-link">
+
+                    <img src="/images/inventory.png"
+
+                         class="nav-icon"
+
+                         alt="Inventory">
+
+                    <span>Inventory</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- ANALYTICS -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    ANALYTICS
+
+                </div>
+
+
+                <a href="/sales"
+
+                   class="nav-link">
+
+                    <img src="/images/sales.png"
+
+                         class="nav-icon"
+
+                         alt="Sales">
+
+                    <span>Sales</span>
+
+                </a>
+
+
+                <a href="/reports"
+
+                   class="nav-link">
+
+                    <img src="/images/reports.png"
+
+                         class="nav-icon"
+
+                         alt="Reports">
+
+                    <span>Reports</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- SYSTEM -->
+
+			<div class="nav-section">
+
+			    <div class="nav-title">SYSTEM</div>
+
+			    <a href="/settings" class="nav-link">
+
+			        <img src="/images/settings.png"
+			             class="nav-icon"
+			             alt="Settings">
+
+			        <span>Settings</span>
+
+			    </a>
+
+			</div>
+
+
+        </nav>
+
+
+        <!-- SIDEBAR USER -->
+
+        <div class="sidebar-footer">
+
+            <div class="user-card">
+
+                <img src="/images/avatar.png"
+
+                     class="user-avatar"
+
+                     alt="User">
+
+                <div>
+
+                    <div class="user-name">
+
+                        Dinesh
+
+                    </div>
+
+                    <div class="user-role">
+
+                        Administrator
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =====================================================
+
+         MAIN
+
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <div class="search-box">
+
+                <img src="/images/search.png"
+
+                     class="search-icon"
+
+                     alt="Search">
+
+                <input type="text"
+
+                       placeholder="Search orders...">
+
+            </div>
+
+
+            <div class="topbar-right">
+
+
+				<a href="/notifications"
+				   class="notification"
+				   aria-label="Notifications">
+
+				    <img src="/images/notification.png"
+				         alt="Notifications">
+
+				    <span class="notification-dot"
+				          id="notificationBadge"></span>
+
+				</a>
+
+                <div class="top-user">
+
+                    <img src="/images/avatar.png"
+
+                         alt="User">
+
+                    <div>
+
+                        <div class="top-user-name">
+
+                            Dinesh
+
+                        </div>
+
+                        <div class="top-user-role">
+
+                            Administrator
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+
+             CONTENT
+
+        ====================================================== -->
+
+        <section class="content orders-page">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1 class="page-title">
+
+                        Orders
+
+                    </h1>
+
+                    <p class="page-description">
+
+                        Create and manage customer orders.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+
+                 CREATE ORDER
+
+            ================================================== -->
+
+            <div class="card order-form-card">
+
+
+                <div class="order-form-header">
+
+                    <h2 class="order-form-title">
+
+                        Create New Order
+
+                    </h2>
+
+                    <p class="order-form-description">
+
+                        Select a customer, add products and enter order details.
+
+                    </p>
+
+                </div>
+
+
+                <div class="order-form-body">
+
+
+                    <form th:action="@{/orders/save}"
+
+                          th:object="${order}"
+
+                          method="post">
+
+
+                        <div class="order-grid">
+
+
+                            <!-- CUSTOMER -->
+
+                            <div class="order-field">
+
+                                <label for="customer">
+
+                                    Customer
+
+                                </label>
+
+                                <select id="customer"
+
+                                        th:field="*{customer.id}"
+
+                                        required>
+
+                                    <option value="">
+
+                                        Select Customer
+
+                                    </option>
+
+                                    <option th:each="customer : ${customers}"
+
+                                            th:value="${customer.id}"
+
+                                            th:text="${customer.name}">
+
+                                        Customer
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- ORDER NUMBER -->
+
+                            <div class="order-field">
+
+                                <label for="orderNumber">
+
+                                    Order Number
+
+                                </label>
+
+                                <input type="text"
+
+                                       id="orderNumber"
+
+                                       th:field="*{orderNumber}"
+
+                                       placeholder="Enter order number"
+
+                                       required>
+
+                            </div>
+
+
+                            <!-- PAYMENT METHOD -->
+
+                            <div class="order-field">
+
+                                <label for="paymentMethod">
+
+                                    Payment Method
+
+                                </label>
+
+                                <select id="paymentMethod"
+
+                                        th:field="*{paymentMethod}">
+
+                                    <option value="">
+
+                                        Select Payment Method
+
+                                    </option>
+
+                                    <option value="Cash">
+
+                                        Cash
+
+                                    </option>
+
+                                    <option value="Card">
+
+                                        Card
+
+                                    </option>
+
+                                    <option value="UPI">
+
+                                        UPI
+
+                                    </option>
+
+                                    <option value="Bank Transfer">
+
+                                        Bank Transfer
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- PAYMENT STATUS -->
+
+                            <div class="order-field">
+
+                                <label for="paymentStatus">
+
+                                    Payment Status
+
+                                </label>
+
+                                <select id="paymentStatus"
+
+                                        th:field="*{paymentStatus}">
+
+                                    <option value="Pending">
+
+                                        Pending
+
+                                    </option>
+
+                                    <option value="Paid">
+
+                                        Paid
+
+                                    </option>
+
+                                    <option value="Failed">
+
+                                        Failed
+
+                                    </option>
+
+                                    <option value="Refunded">
+
+                                        Refunded
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- SHIPPING ADDRESS -->
+
+                            <div class="order-field order-field-full">
+
+                                <label for="shippingAddress">
+
+                                    Shipping Address
+
+                                </label>
+
+                                <textarea id="shippingAddress"
+
+                                          th:field="*{shippingAddress}"
+
+                                          placeholder="Enter shipping address"></textarea>
+
+                            </div>
+
+
+                            <!-- =================================================
+
+                                 ORDER ITEMS
+
+                            ================================================== -->
+
+                            <div class="order-items-section">
+
+
+                                <div class="order-items-header">
+
+                                    <div>
+
+                                        <h3 class="order-items-title">
+
+                                            Order Item
+
+                                        </h3>
+
+                                        <p class="order-items-description">
+
+                                            Select the product and quantity for this order.
+
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="order-item-row">
+
+
+                                    <!-- PRODUCT -->
+
+                                    <div class="order-item-field">
+
+                                        <label for="product">
+
+                                            Product
+
+                                        </label>
+
+                                        <select id="product"
+
+                                                name="items[0].product.id"
+
+                                                required>
+
+                                            <option value="">
+
+                                                Select Product
+
+                                            </option>
+
+                                            <option th:each="product : ${products}"
+
+                                                    th:value="${product.id}"
+
+                                                    th:text="${product.name + ' - ' + product.sku + ' | Stock: ' + product.stockQuantity}">
+
+                                                Product
+
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+
+                                    <!-- QUANTITY -->
+
+                                    <div class="order-item-field">
+
+                                        <label for="quantity">
+
+                                            Quantity
+
+                                        </label>
+
+                                        <input type="number"
+
+                                               id="quantity"
+
+                                               name="items[0].quantity"
+
+                                               min="1"
+
+                                               value="1"
+
+                                               required>
+
+                                    </div>
+
+
+                                    <!-- PRICE -->
+
+                                    <div class="order-item-field">
+
+                                        <label for="price">
+
+                                            Price
+
+                                        </label>
+
+                                        <input type="number"
+
+                                               id="price"
+
+                                               name="items[0].price"
+
+                                               min="0"
+
+                                               step="0.01"
+
+                                               placeholder="0.00"
+
+                                               required>
+
+                                    </div>
+
+
+                                </div>
+
+
+                                <div class="order-item-note">
+
+                                    Product stock will be updated when the order is saved.
+
+                                </div>
+
+
+                            </div>
+
+
+                            <!-- FORM ACTION -->
+
+                            <div class="order-form-actions">
+
+                                <button type="submit"
+
+                                        class="order-submit">
+
+                                    Create Order
+
+                                </button>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+
+                 ORDER LIST
+
+            ================================================== -->
+
+            <div class="card">
+
+
+                <div class="orders-list-header">
+
+
+                    <div>
+
+                        <h2 class="orders-list-title">
+
+                            Order List
+
+                        </h2>
+
+                        <p class="orders-list-description">
+
+                            View and manage all customer orders.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="orders-count">
+
+                        <span th:text="${#lists.size(orders)}">
+
+                            0
+
+                        </span>
+
+                        Orders
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="orders-table-wrapper">
+
+
+                    <table class="orders-table">
+
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+
+                                Order
+
+                            </th>
+
+                            <th>
+
+                                Customer
+
+                            </th>
+
+                            <th>
+
+                                Date
+
+                            </th>
+
+                            <th>
+
+                                Status
+
+                            </th>
+
+                            <th>
+
+                                Payment
+
+                            </th>
+
+                            <th>
+
+                                Payment Status
+
+                            </th>
+
+                            <th>
+
+                                Total
+
+                            </th>
+
+                            <th>
+
+                                Actions
+
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                        <!-- ORDER ROW -->
+
+                        <tr th:each="orderItem : ${orders}">
+
+
+                            <!-- ORDER NUMBER -->
+
+                            <td>
+
+                                <span class="order-number"
+
+                                      th:text="${orderItem.orderNumber}">
+
+                                    ORD-001
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- CUSTOMER -->
+
+                            <td>
+
+                                <span class="order-customer"
+
+                                      th:text="${orderItem.customer != null
+
+                                                ? orderItem.customer.name
+
+                                                : 'Unknown'}">
+
+                                    Customer
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- DATE -->
+
+                            <td>
+
+                                <span class="order-date"
+
+                                      th:text="${orderItem.orderDate != null
+
+                                                ? #temporals.format(orderItem.orderDate, 'dd MMM yyyy HH:mm')
+
+                                                : 'Not available'}">
+
+                                    01 Jan 2026
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+
+                                <span class="order-status order-status-pending"
+
+                                      th:if="${orderItem.status != null and orderItem.status.toString().equalsIgnoreCase('PENDING')}"
+
+                                      th:text="${orderItem.status}">
+
+                                    Pending
+
+                                </span>
+
+
+                                <span class="order-status order-status-completed"
+
+                                      th:if="${orderItem.status != null and orderItem.status.toString().equalsIgnoreCase('COMPLETED')}"
+
+                                      th:text="${orderItem.status}">
+
+                                    Completed
+
+                                </span>
+
+
+                                <span class="order-status order-status-cancelled"
+
+                                      th:if="${orderItem.status != null and orderItem.status.toString().equalsIgnoreCase('CANCELLED')}"
+
+                                      th:text="${orderItem.status}">
+
+                                    Cancelled
+
+                                </span>
+
+
+                                <span class="order-status order-status-processing"
+
+                                      th:if="${orderItem.status != null and orderItem.status.toString().equalsIgnoreCase('PROCESSING')}"
+
+                                      th:text="${orderItem.status}">
+
+                                    Processing
+
+                                </span>
+
+
+                                <span class="order-status order-status-default"
+
+                                      th:if="${orderItem.status == null
+
+                                              or (!orderItem.status.toString().equalsIgnoreCase('PENDING')
+
+                                              and !orderItem.status.toString().equalsIgnoreCase('COMPLETED')
+
+                                              and !orderItem.status.toString().equalsIgnoreCase('CANCELLED')
+
+                                              and !orderItem.status.toString().equalsIgnoreCase('PROCESSING'))}"
+
+                                      th:text="${orderItem.status != null ? orderItem.status : 'Unknown'}">
+
+                                    Unknown
+
+                                </span>
+
+
+                            </td>
+
+
+                            <!-- PAYMENT METHOD -->
+
+                            <td>
+
+                                <span class="order-payment"
+
+                                      th:text="${orderItem.paymentMethod != null
+
+                                                and !orderItem.paymentMethod.isBlank()
+
+                                                ? orderItem.paymentMethod
+
+                                                : 'Not specified'}">
+
+                                    Cash
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- PAYMENT STATUS -->
+
+                            <td>
+
+
+                                <span class="order-status order-status-completed"
+
+                                      th:if="${orderItem.paymentStatus != null
+
+                                              and orderItem.paymentStatus.toString().equalsIgnoreCase('PAID')}"
+
+                                      th:text="${orderItem.paymentStatus}">
+
+                                    Paid
+
+                                </span>
+
+
+                                <span class="order-status order-status-pending"
+
+                                      th:if="${orderItem.paymentStatus == null
+
+                                              or orderItem.paymentStatus.toString().equalsIgnoreCase('PENDING')}"
+
+                                      th:text="${orderItem.paymentStatus != null
+
+                                                ? orderItem.paymentStatus
+
+                                                : 'Pending'}">
+
+                                    Pending
+
+                                </span>
+
+
+                                <span class="order-status order-status-cancelled"
+
+                                      th:if="${orderItem.paymentStatus != null
+
+                                              and orderItem.paymentStatus.toString().equalsIgnoreCase('FAILED')}"
+
+                                      th:text="${orderItem.paymentStatus}">
+
+                                    Failed
+
+                                </span>
+
+
+                                <span class="order-status order-status-default"
+
+                                      th:if="${orderItem.paymentStatus != null
+
+                                              and orderItem.paymentStatus.toString().equalsIgnoreCase('REFUNDED')}"
+
+                                      th:text="${orderItem.paymentStatus}">
+
+                                    Refunded
+
+                                </span>
+
+
+                            </td>
+
+
+                            <!-- TOTAL -->
+
+                            <td>
+
+                                <span class="order-amount">
+
+                                    ₹<span th:text="${orderItem.totalAmount != null
+
+                                                     ? #numbers.formatDecimal(orderItem.totalAmount, 1, 2)
+
+                                                     : '0.00'}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ACTIONS -->
+
+                            <td>
+
+                                <div class="order-actions">
+
+
+                                    <a th:href="@{/orders/view/{id}(id=${orderItem.id})}"
+
+                                       class="order-action order-view">
+
+                                        View
+
+                                    </a>
+
+
+                                    <a th:href="@{/orders/invoice/{id}(id=${orderItem.id})}"
+
+                                       class="order-action order-invoice">
+
+                                        Invoice
+
+                                    </a>
+
+
+                                    <a th:href="@{/orders/delete/{id}(id=${orderItem.id})}"
+
+                                       class="order-action order-delete"
+
+                                       onclick="return confirm('Are you sure you want to delete this order?');">
+
+                                        Delete
+
+                                    </a>
+
+
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+
+
+                        <!-- EMPTY -->
+
+                        <tr th:if="${orders == null or #lists.isEmpty(orders)}">
+
+                            <td colspan="8">
+
+
+                                <div class="orders-empty">
+
+                                    <img src="/images/orders.png"
+
+                                         alt="Orders">
+
+                                    <div class="orders-empty-title">
+
+                                        No orders found
+
+                                    </div>
+
+                                    <div class="orders-empty-text">
+
+                                        Create your first order using the form above.
+
+                                    </div>
+
+                                </div>
+
+
+                            </td>
+
+                        </tr>
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchInput = document.querySelector(".search-box input");
+
+        if (!searchInput) {
+            return;
+        }
+
+        const rows = document.querySelectorAll(".orders-table tbody tr");
+
+        searchInput.addEventListener("input", function () {
+
+            const searchText = this.value.toLowerCase().trim();
+
+            rows.forEach(function (row) {
+
+                const isEmptyRow =
+                    row.querySelector(".orders-empty") !== null;
+
+                if (isEmptyRow) {
+                    return;
+                }
+
+                const rowText =
+                    row.textContent
+                        .toLowerCase()
+                        .replace(/\s+/g, " ")
+                        .trim();
+
+                row.style.display =
+                    searchText === "" || rowText.includes(searchText)
+                        ? ""
+                        : "none";
+            });
+        });
+    });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const badge =
+        document.getElementById("notificationBadge");
+
+    if (!badge) {
+        return;
+    }
+
+    function updateNotificationBadge() {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem("stockProSettings") || "null"
+            ) || {};
+
+        if (saved.notificationsEnabled === false) {
+            badge.style.display = "none";
+            return;
+        }
+
+        const threshold =
+            Math.max(
+                1,
+                Math.min(
+                    100,
+                    Number(saved.lowStockThreshold) || 10
+                )
+            );
+
+        fetch("/notifications", {
+            method: "GET",
+            cache: "no-store"
+        })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("Unable to load notifications");
+            }
+            return response.text();
+        })
+        .then(function (html) {
+
+            const parser = new DOMParser();
+
+            const notificationPage =
+                parser.parseFromString(html, "text/html");
+
+            let notificationCount = 0;
+
+            const stockAlerts =
+                notificationPage.querySelectorAll(".stock-alert");
+
+            stockAlerts.forEach(function (item) {
+
+                const stock =
+                    Number(
+                        item.getAttribute("data-stock")
+                    ) || 0;
+
+                if (
+                    stock === 0 ||
+                    (stock > 0 && stock <= threshold)
+                ) {
+                    notificationCount++;
+                }
+            });
+
+            const pendingOrders =
+                notificationPage.querySelectorAll(
+                    ".pending-order-alert"
+                );
+
+            notificationCount += pendingOrders.length;
+
+            if (notificationCount > 0) {
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+
+        })
+        .catch(function (error) {
+
+            console.error(
+                "Notification badge error:",
+                error
+            );
+
+            badge.style.display = "none";
+        });
+    }
+
+    updateNotificationBadge();
+
+    setInterval(
+        updateNotificationBadge,
+        30000
+    );
+
+});
+</script>
+</body>
+
+</html>

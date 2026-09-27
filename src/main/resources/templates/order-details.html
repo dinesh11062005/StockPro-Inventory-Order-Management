@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+
+<html lang="en"
+
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Order Details | StockPro</title>
+
+    <link rel="stylesheet"
+
+          th:href="@{/css/style.css}">
+
+    <style>
+
+        /* =====================================================
+
+           ORDER DETAILS PAGE
+
+        ===================================================== */
+
+        .order-details-page {
+
+            width: 100%;
+
+        }
+
+        /* =====================================================
+
+           TOP ACTIONS
+
+        ===================================================== */
+
+        .order-details-actions {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+        }
+
+        .details-action {
+
+            height: 36px;
+
+            padding: 0 14px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 7px;
+
+            text-decoration: none;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+        }
+
+        .details-back {
+
+            background: #eef2f7;
+
+            color: #40536b;
+
+        }
+
+        .details-back:hover {
+
+            background: #e1e7ef;
+
+        }
+
+        .details-invoice {
+
+            background: #1677e8;
+
+            color: #ffffff;
+
+        }
+
+        .details-invoice:hover {
+
+            background: #075bb5;
+
+        }
+
+        /* =====================================================
+
+           ORDER SUMMARY
+
+        ===================================================== */
+
+        .order-summary-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 24px;
+
+        }
+
+        .order-summary-card {
+
+            padding: 18px;
+
+            border: 1px solid #e4eaf1;
+
+            border-radius: 9px;
+
+            background: #ffffff;
+
+        }
+
+        .order-summary-label {
+
+            color: #718096;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+        }
+
+        .order-summary-value {
+
+            margin-top: 6px;
+
+            color: #172b4d;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+        }
+
+        .order-summary-value.amount {
+
+            color: #1677e8;
+
+        }
+
+        /* =====================================================
+
+           INFORMATION GRID
+
+        ===================================================== */
+
+        .order-info-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 24px;
+
+            margin-bottom: 24px;
+
+        }
+
+        .order-info-card {
+
+            min-width: 0;
+
+        }
+
+        .order-info-header {
+
+            padding: 18px 22px;
+
+            border-bottom: 1px solid #e4eaf1;
+
+        }
+
+        .order-info-title {
+
+            margin: 0;
+
+            color: #172b4d;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+        }
+
+        .order-info-body {
+
+            padding: 20px 22px;
+
+        }
+
+        .info-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 11px 0;
+
+            border-bottom: 1px solid #edf1f5;
+
+        }
+
+        .info-row:first-child {
+
+            padding-top: 0;
+
+        }
+
+        .info-row:last-child {
+
+            padding-bottom: 0;
+
+            border-bottom: none;
+
+        }
+
+        .info-label {
+
+            color: #718096;
+
+            font-size: 11px;
+
+        }
+
+        .info-value {
+
+            color: #344563;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            text-align: right;
+
+        }
+
+        .shipping-address {
+
+            color: #344563;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+
+            white-space: pre-line;
+
+        }
+
+        /* =====================================================
+
+           STATUS
+
+        ===================================================== */
+
+        .details-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            min-height: 25px;
+
+            padding: 0 9px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+        }
+
+        .details-pending {
+
+            background: #fff6df;
+
+            color: #a66b00;
+
+        }
+
+        .details-completed {
+
+            background: #e9f8ef;
+
+            color: #21844a;
+
+        }
+
+        .details-cancelled {
+
+            background: #fff0f0;
+
+            color: #c43d3d;
+
+        }
+
+        .details-processing {
+
+            background: #eaf3ff;
+
+            color: #1677e8;
+
+        }
+
+        .details-default {
+
+            background: #eef2f7;
+
+            color: #64748b;
+
+        }
+
+        /* =====================================================
+
+           ITEMS TABLE
+
+        ===================================================== */
+
+        .items-card {
+
+            margin-bottom: 24px;
+
+        }
+
+        .items-header {
+
+            padding: 19px 22px;
+
+            border-bottom: 1px solid #e4eaf1;
+
+        }
+
+        .items-title {
+
+            margin: 0;
+
+            color: #172b4d;
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+        }
+
+        .items-description {
+
+            margin: 5px 0 0;
+
+            color: #718096;
+
+            font-size: 11px;
+
+        }
+
+        .items-table-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
+        .items-table {
+
+            width: 100%;
+
+            min-width: 700px;
+
+            border-collapse: collapse;
+
+        }
+
+        .items-table th {
+
+            height: 46px;
+
+            padding: 0 16px;
+
+            background: #f7f9fc;
+
+            border-bottom: 1px solid #e4eaf1;
+
+            color: #64748b;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            text-transform: uppercase;
+
+        }
+
+        .items-table td {
+
+            padding: 14px 16px;
+
+            border-bottom: 1px solid #edf1f5;
+
+            color: #344563;
+
+            font-size: 11px;
+
+        }
+
+        .items-table tbody tr:last-child td {
+
+            border-bottom: none;
+
+        }
+
+        .item-product {
+
+            color: #172b4d;
+
+            font-weight: 700;
+
+        }
+
+        .item-sku {
+
+            margin-top: 3px;
+
+            color: #8a97aa;
+
+            font-size: 10px;
+
+        }
+
+        .item-number {
+
+            color: #718096;
+
+        }
+
+        .item-price,
+
+        .item-total {
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+        }
+
+        /* =====================================================
+
+           TOTAL
+
+        ===================================================== */
+
+        .order-total {
+
+            padding: 20px 22px;
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            border-top: 1px solid #e4eaf1;
+
+        }
+
+        .order-total-box {
+
+            min-width: 230px;
+
+        }
+
+        .order-total-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 30px;
+
+            padding: 7px 0;
+
+        }
+
+        .order-total-label {
+
+            color: #718096;
+
+            font-size: 11px;
+
+        }
+
+        .order-total-value {
+
+            color: #172b4d;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+        }
+
+        .order-total-final {
+
+            margin-top: 6px;
+
+            padding-top: 12px;
+
+            border-top: 1px solid #dfe5ec;
+
+        }
+
+        .order-total-final .order-total-label {
+
+            color: #172b4d;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+        }
+
+        .order-total-final .order-total-value {
+
+            color: #1677e8;
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+        }
+
+        /* =====================================================
+
+           RESPONSIVE
+
+        ===================================================== */
+
+        @media (max-width: 1050px) {
+
+            .order-summary-grid {
+
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .order-info-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .order-summary-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .page-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+            .order-details-actions {
+
+                width: 100%;
+
+            }
+
+        }
+
+
+        /* Keep order details topbar controls aligned to the right */
+        .topbar-right {
+            margin-left: auto;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================================
+
+         SIDEBAR
+
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="logo">
+
+            <img src="/images/logo.png"
+
+                 alt="StockPro"
+
+                 class="logo-image">
+
+            <div>
+
+                <div class="logo-text">
+
+                    StockPro
+
+                </div>
+
+                <div class="logo-subtitle">
+
+                    Inventory &amp; Order Management
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <nav class="nav">
+
+
+            <!-- MAIN -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    MAIN
+
+                </div>
+
+
+                <a href="/"
+
+                   class="nav-link">
+
+                    <img src="/images/dashboard.png"
+
+                         class="nav-icon"
+
+                         alt="Dashboard">
+
+                    <span>Dashboard</span>
+
+                </a>
+
+
+                <a href="/products"
+
+                   class="nav-link">
+
+                    <img src="/images/products.png"
+
+                         class="nav-icon"
+
+                         alt="Products">
+
+                    <span>Products</span>
+
+                </a>
+
+
+                <a href="/categories"
+
+                   class="nav-link">
+
+                    <img src="/images/categories.png"
+
+                         class="nav-icon"
+
+                         alt="Categories">
+
+                    <span>Categories</span>
+
+                </a>
+
+
+                <a href="/suppliers"
+
+                   class="nav-link">
+
+                    <img src="/images/suppliers.png"
+
+                         class="nav-icon"
+
+                         alt="Suppliers">
+
+                    <span>Suppliers</span>
+
+                </a>
+
+
+                <a href="/customers"
+
+                   class="nav-link">
+
+                    <img src="/images/customers.png"
+
+                         class="nav-icon"
+
+                         alt="Customers">
+
+                    <span>Customers</span>
+
+                </a>
+
+
+                <a href="/orders"
+
+                   class="nav-link active">
+
+                    <img src="/images/orders.png"
+
+                         class="nav-icon"
+
+                         alt="Orders">
+
+                    <span>Orders</span>
+
+                </a>
+
+
+                <a href="/inventory"
+
+                   class="nav-link">
+
+                    <img src="/images/inventory.png"
+
+                         class="nav-icon"
+
+                         alt="Inventory">
+
+                    <span>Inventory</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- ANALYTICS -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    ANALYTICS
+
+                </div>
+
+
+                <a href="/sales"
+
+                   class="nav-link">
+
+                    <img src="/images/sales.png"
+
+                         class="nav-icon"
+
+                         alt="Sales">
+
+                    <span>Sales</span>
+
+                </a>
+
+
+                <a href="/reports"
+
+                   class="nav-link">
+
+                    <img src="/images/reports.png"
+
+                         class="nav-icon"
+
+                         alt="Reports">
+
+                    <span>Reports</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- SYSTEM -->
+
+			<div class="nav-section">
+
+			    <div class="nav-title">SYSTEM</div>
+
+			    <a href="/settings" class="nav-link">
+
+			        <img src="/images/settings.png"
+			             class="nav-icon"
+			             alt="Settings">
+
+			        <span>Settings</span>
+
+			    </a>
+
+			</div>
+
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <div class="user-card">
+
+                <img src="/images/avatar.png"
+
+                     class="user-avatar"
+
+                     alt="User">
+
+                <div>
+
+                    <div class="user-name">
+
+                        Dinesh
+
+                    </div>
+
+                    <div class="user-role">
+
+                        Administrator
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =====================================================
+
+         MAIN
+
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <div class="topbar-right">
+
+
+				<a href="/notifications"
+				   class="notification"
+				   aria-label="Notifications">
+
+				    <img src="/images/notification.png"
+				         alt="Notifications">
+
+				    <span class="notification-dot"
+				          id="notificationBadge"></span>
+
+				</a>
+
+
+                <div class="top-user">
+
+                    <img src="/images/avatar.png"
+
+                         alt="User">
+
+                    <div>
+
+                        <div class="top-user-name">
+
+                            Dinesh
+
+                        </div>
+
+                        <div class="top-user-role">
+
+                            Administrator
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+
+             CONTENT
+
+        ====================================================== -->
+
+        <section class="content order-details-page">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+
+                <div>
+
+                    <h1 class="page-title">
+
+                        Order Details
+
+                        <span th:text="${order != null and order.orderNumber != null
+
+                                        ? ' - ' + order.orderNumber
+
+                                        : ''}">
+
+                        </span>
+
+                    </h1>
+
+                    <p class="page-description">
+
+                        View complete information for this customer order.
+
+                    </p>
+
+                </div>
+
+
+                <div class="order-details-actions">
+
+
+                    <a href="/orders"
+
+                       class="details-action details-back">
+
+                        Back to Orders
+
+                    </a>
+
+
+                    <a th:if="${order != null}"
+
+                       th:href="@{/orders/invoice/{id}(id=${order.id})}"
+
+                       class="details-action details-invoice">
+
+                        View Invoice
+
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+
+                 ORDER SUMMARY
+
+            ================================================== -->
+
+            <div class="order-summary-grid">
+
+
+                <!-- ORDER NUMBER -->
+
+                <div class="order-summary-card">
+
+                    <div class="order-summary-label">
+
+                        Order Number
+
+                    </div>
+
+                    <div class="order-summary-value"
+
+                         th:text="${order != null and order.orderNumber != null
+
+                                   ? order.orderNumber
+
+                                   : 'Not available'}">
+
+                        ORD-001
+
+                    </div>
+
+                </div>
+
+
+                <!-- CUSTOMER -->
+
+                <div class="order-summary-card">
+
+                    <div class="order-summary-label">
+
+                        Customer
+
+                    </div>
+
+                    <div class="order-summary-value"
+
+                         th:text="${order != null and order.customer != null
+
+                                   ? order.customer.name
+
+                                   : 'Unknown'}">
+
+                        Customer
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="order-summary-card">
+
+                    <div class="order-summary-label">
+
+                        Order Status
+
+                    </div>
+
+
+                    <div style="margin-top: 7px;">
+
+
+                        <span class="details-status details-pending"
+
+                              th:if="${order != null
+
+                                      and order.status != null
+
+                                      and order.status.toString().equalsIgnoreCase('PENDING')}"
+
+                              th:text="${order.status}">
+
+                            Pending
+
+                        </span>
+
+
+                        <span class="details-status details-processing"
+
+                              th:if="${order != null
+
+                                      and order.status != null
+
+                                      and order.status.toString().equalsIgnoreCase('PROCESSING')}"
+
+                              th:text="${order.status}">
+
+                            Processing
+
+                        </span>
+
+
+                        <span class="details-status details-completed"
+
+                              th:if="${order != null
+
+                                      and order.status != null
+
+                                      and order.status.toString().equalsIgnoreCase('COMPLETED')}"
+
+                              th:text="${order.status}">
+
+                            Completed
+
+                        </span>
+
+
+                        <span class="details-status details-cancelled"
+
+                              th:if="${order != null
+
+                                      and order.status != null
+
+                                      and order.status.toString().equalsIgnoreCase('CANCELLED')}"
+
+                              th:text="${order.status}">
+
+                            Cancelled
+
+                        </span>
+
+
+                        <span class="details-status details-default"
+
+                              th:if="${order == null
+
+                                      or order.status == null
+
+                                      or (!order.status.toString().equalsIgnoreCase('PENDING')
+
+                                      and !order.status.toString().equalsIgnoreCase('PROCESSING')
+
+                                      and !order.status.toString().equalsIgnoreCase('COMPLETED')
+
+                                      and !order.status.toString().equalsIgnoreCase('CANCELLED'))}"
+
+                              th:text="${order != null and order.status != null
+
+                                        ? order.status
+
+                                        : 'Unknown'}">
+
+                            Unknown
+
+                        </span>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- TOTAL -->
+
+                <div class="order-summary-card">
+
+                    <div class="order-summary-label">
+
+                        Order Total
+
+                    </div>
+
+                    <div class="order-summary-value amount">
+
+                        ₹<span th:text="${order != null and order.totalAmount != null
+
+                                         ? #numbers.formatDecimal(order.totalAmount, 1, 2)
+
+                                         : '0.00'}">
+
+                            0.00
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+
+                 CUSTOMER & PAYMENT INFORMATION
+
+            ================================================== -->
+
+            <div class="order-info-grid">
+
+
+                <!-- CUSTOMER INFORMATION -->
+
+                <div class="card order-info-card">
+
+
+                    <div class="order-info-header">
+
+                        <h2 class="order-info-title">
+
+                            Customer Information
+
+                        </h2>
+
+                    </div>
+
+
+                    <div class="order-info-body">
+
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+
+                                Name
+
+                            </span>
+
+                            <span class="info-value"
+
+                                  th:text="${order != null and order.customer != null
+
+                                            ? order.customer.name
+
+                                            : 'Not available'}">
+
+                                Customer
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+
+                                Phone
+
+                            </span>
+
+                            <span class="info-value"
+
+                                  th:text="${order != null
+
+                                            and order.customer != null
+
+                                            and order.customer.phone != null
+
+                                            ? order.customer.phone
+
+                                            : 'Not available'}">
+
+                                Not available
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+
+                                Email
+
+                            </span>
+
+                            <span class="info-value"
+
+                                  th:text="${order != null
+
+                                            and order.customer != null
+
+                                            and order.customer.email != null
+
+                                            ? order.customer.email
+
+                                            : 'Not available'}">
+
+                                Not available
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+
+                                Address
+
+                            </span>
+
+                            <span class="info-value"
+
+                                  th:text="${order != null
+
+                                            and order.customer != null
+
+                                            and order.customer.address != null
+
+                                            ? order.customer.address
+
+                                            : 'Not available'}">
+
+                                Not available
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ORDER INFORMATION -->
+
+                <div class="card order-info-card">
+
+
+                    <div class="order-info-header">
+
+                        <h2 class="order-info-title">
+
+                            Order Information
+
+                        </h2>
+
+                    </div>
+
+
+                    <div class="order-info-body">
+
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+
+                                Order Date
+
+                            </span>
+
+                            <span class="info-value"
+
+                                  th:text="${order != null
+
+                                            and order.orderDate != null
+
+                                            ? #temporals.format(order.orderDate, 'dd MMM yyyy HH:mm')
+
+                                            : 'Not available'}">
+
+                                Not available
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+
+                                Payment Method
+
+                            </span>
+
+                            <span class="info-value"
+
+                                  th:text="${order != null
+
+                                            and order.paymentMethod != null
+
+                                            ? order.paymentMethod
+
+                                            : 'Not specified'}">
+
+                                Not specified
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+
+                                Payment Status
+
+                            </span>
+
+                            <span class="info-value"
+
+                                  th:text="${order != null
+
+                                            and order.paymentStatus != null
+
+                                            ? order.paymentStatus
+
+                                            : 'Pending'}">
+
+                                Pending
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-row">
+
+                            <span class="info-label">
+
+                                Shipping Address
+
+                            </span>
+
+                            <span class="info-value shipping-address"
+
+                                  th:text="${order != null
+
+                                            and order.shippingAddress != null
+
+                                            ? order.shippingAddress
+
+                                            : 'Not available'}">
+
+                                Not available
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+
+                 ORDER ITEMS
+
+            ================================================== -->
+
+            <div class="card items-card">
+
+
+                <div class="items-header">
+
+                    <h2 class="items-title">
+
+                        Order Items
+
+                    </h2>
+
+                    <p class="items-description">
+
+                        Products included in this order.
+
+                    </p>
+
+                </div>
+
+
+                <div class="items-table-wrapper">
+
+
+                    <table class="items-table">
+
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+
+                                #
+
+                            </th>
+
+                            <th>
+
+                                Product
+
+                            </th>
+
+                            <th>
+
+                                Quantity
+
+                            </th>
+
+                            <th>
+
+                                Unit Price
+
+                            </th>
+
+                            <th>
+
+                                Total
+
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                        <tr th:each="item, stat : ${order.items}">
+
+
+                            <!-- NUMBER -->
+
+                            <td>
+
+                                <span class="item-number"
+
+                                      th:text="${stat.count}">
+
+                                    1
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- PRODUCT -->
+
+                            <td>
+
+                                <div class="item-product"
+
+                                     th:text="${item.product != null
+
+                                               ? item.product.name
+
+                                               : 'Unknown Product'}">
+
+                                    Product
+
+                                </div>
+
+                                <div class="item-sku"
+
+                                     th:if="${item.product != null}"
+
+                                     th:text="${item.product.sku}">
+
+                                    SKU
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- QUANTITY -->
+
+                            <td>
+
+                                <span th:text="${item.quantity != null
+
+                                                ? item.quantity
+
+                                                : 0}">
+
+                                    1
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- PRICE -->
+
+                            <td>
+
+                                <span class="item-price">
+
+                                    ₹<span th:text="${item.price != null
+
+                                                     ? #numbers.formatDecimal(item.price, 1, 2)
+
+                                                     : '0.00'}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- TOTAL -->
+
+                            <td>
+
+                                <span class="item-total">
+
+                                    ₹<span th:text="${item.total != null
+
+                                                     ? #numbers.formatDecimal(item.total, 1, 2)
+
+                                                     : '0.00'}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </td>
+
+
+                        </tr>
+
+
+                        <tr th:if="${order == null
+
+                                    or order.items == null
+
+                                    or #lists.isEmpty(order.items)}">
+
+                            <td colspan="5"
+
+                                style="text-align:center; padding:35px; color:#8a97aa;">
+
+                                No items found for this order.
+
+                            </td>
+
+                        </tr>
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+                <!-- TOTAL -->
+
+                <div class="order-total">
+
+
+                    <div class="order-total-box">
+
+
+                        <div class="order-total-row">
+
+                            <span class="order-total-label">
+
+                                Subtotal
+
+                            </span>
+
+                            <span class="order-total-value">
+
+                                ₹<span th:text="${order != null and order.totalAmount != null
+
+                                                 ? #numbers.formatDecimal(order.totalAmount, 1, 2)
+
+                                                 : '0.00'}">
+
+                                    0.00
+
+                                </span>
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="order-total-row order-total-final">
+
+                            <span class="order-total-label">
+
+                                Grand Total
+
+                            </span>
+
+                            <span class="order-total-value">
+
+                                ₹<span th:text="${order != null and order.totalAmount != null
+
+                                                 ? #numbers.formatDecimal(order.totalAmount, 1, 2)
+
+                                                 : '0.00'}">
+
+                                    0.00
+
+                                </span>
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const badge =
+        document.getElementById("notificationBadge");
+
+    if (!badge) {
+        return;
+    }
+
+    function updateNotificationBadge() {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem("stockProSettings") || "null"
+            ) || {};
+
+        if (saved.notificationsEnabled === false) {
+            badge.style.display = "none";
+            return;
+        }
+
+        const threshold =
+            Math.max(
+                1,
+                Math.min(
+                    100,
+                    Number(saved.lowStockThreshold) || 10
+                )
+            );
+
+        fetch("/notifications", {
+            method: "GET",
+            cache: "no-store"
+        })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("Unable to load notifications");
+            }
+            return response.text();
+        })
+        .then(function (html) {
+
+            const parser = new DOMParser();
+
+            const notificationPage =
+                parser.parseFromString(html, "text/html");
+
+            let notificationCount = 0;
+
+            const stockAlerts =
+                notificationPage.querySelectorAll(".stock-alert");
+
+            stockAlerts.forEach(function (item) {
+
+                const stock =
+                    Number(
+                        item.getAttribute("data-stock")
+                    ) || 0;
+
+                if (
+                    stock === 0 ||
+                    (stock > 0 && stock <= threshold)
+                ) {
+                    notificationCount++;
+                }
+            });
+
+            const pendingOrders =
+                notificationPage.querySelectorAll(
+                    ".pending-order-alert"
+                );
+
+            notificationCount += pendingOrders.length;
+
+            if (notificationCount > 0) {
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+
+        })
+        .catch(function (error) {
+
+            console.error(
+                "Notification badge error:",
+                error
+            );
+
+            badge.style.display = "none";
+        });
+    }
+
+    updateNotificationBadge();
+
+    setInterval(
+        updateNotificationBadge,
+        30000
+    );
+
+});
+</script>
+
+
+</body>
+
+</html>

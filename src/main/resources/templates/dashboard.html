@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+
+<html lang="en"
+
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | StockPro</title>
+
+    <link rel="stylesheet"
+
+          th:href="@{/css/style.css}">
+
+    <style>
+
+        /* =====================================================
+
+           DASHBOARD
+
+        ===================================================== */
+
+        .dashboard-page {
+
+            width: 100%;
+
+        }
+
+        /* =====================================================
+
+           STATISTICS
+
+        ===================================================== */
+
+        .dashboard-stats {
+
+            display: grid;
+
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 22px;
+
+        }
+
+        .dashboard-stat-card {
+
+            background: #ffffff;
+
+            border: 1px solid #e4eaf1;
+
+            border-radius: 14px;
+
+            padding: 22px;
+
+            box-shadow: 0 6px 20px rgba(20, 40, 70, 0.06);
+
+            transition: transform 0.2s ease,
+
+                        box-shadow 0.2s ease;
+
+        }
+
+        .dashboard-stat-card:hover {
+
+            transform: translateY(-3px);
+
+            box-shadow: 0 10px 25px rgba(20, 40, 70, 0.10);
+
+        }
+
+        .dashboard-stat-top {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+        }
+
+        .dashboard-stat-title {
+
+            color: #718096;
+
+            font-size: 13px;
+
+            margin-bottom: 8px;
+
+        }
+
+        .dashboard-stat-value {
+
+            color: #172b4d;
+
+            font-size: 28px;
+
+            font-weight: 700;
+
+            line-height: 1.2;
+
+        }
+
+        .dashboard-stat-description {
+
+            color: #8a97aa;
+
+            font-size: 12px;
+
+            margin-top: 8px;
+
+        }
+
+        .dashboard-stat-icon {
+
+            width: 54px;
+
+            height: 54px;
+
+            border-radius: 12px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #edf5ff;
+
+            flex-shrink: 0;
+
+        }
+
+        .dashboard-stat-icon img {
+
+            width: 32px;
+
+            height: 32px;
+
+            object-fit: contain;
+
+        }
+
+        /* =====================================================
+
+           SECONDARY STATISTICS
+
+        ===================================================== */
+
+        .dashboard-secondary {
+
+            display: grid;
+
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 24px;
+
+        }
+
+        .secondary-card {
+
+            background: #ffffff;
+
+            border: 1px solid #e4eaf1;
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            box-shadow: 0 6px 20px rgba(20, 40, 70, 0.05);
+
+        }
+
+        .secondary-card .dashboard-stat-icon {
+
+            width: 48px;
+
+            height: 48px;
+
+        }
+
+        .secondary-card .dashboard-stat-icon img {
+
+            width: 28px;
+
+            height: 28px;
+
+        }
+
+        /* =====================================================
+
+           TABLE CARDS
+
+        ===================================================== */
+
+        .dashboard-table-card {
+
+            background: #ffffff;
+
+            border: 1px solid #e4eaf1;
+
+            border-radius: 14px;
+
+            box-shadow: 0 6px 20px rgba(20, 40, 70, 0.06);
+
+            overflow: hidden;
+
+            margin-bottom: 22px;
+
+        }
+
+        .dashboard-table-header {
+
+            padding: 20px 22px;
+
+            border-bottom: 1px solid #e8edf4;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+        }
+
+        .dashboard-table-title {
+
+            margin: 0;
+
+            color: #172b4d;
+
+            font-size: 19px;
+
+            font-weight: 700;
+
+        }
+
+        .dashboard-table-subtitle {
+
+            margin: 5px 0 0;
+
+            color: #8290a6;
+
+            font-size: 12px;
+
+        }
+
+        .dashboard-view-all {
+
+            text-decoration: none;
+
+            padding: 8px 13px;
+
+            border-radius: 7px;
+
+            background: #edf5ff;
+
+            color: #1677e8;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+
+        }
+
+        .dashboard-view-all:hover {
+
+            background: #dcecff;
+
+        }
+
+        /* =====================================================
+
+           TABLE
+
+        ===================================================== */
+
+        .dashboard-table-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
+        .dashboard-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+        }
+
+        .dashboard-table th {
+
+            padding: 14px 18px;
+
+            background: #f7f9fc;
+
+            color: #64748b;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.4px;
+
+            white-space: nowrap;
+
+        }
+
+        .dashboard-table td {
+
+            padding: 15px 18px;
+
+            border-top: 1px solid #edf1f6;
+
+            color: #344563;
+
+            font-size: 13px;
+
+            white-space: nowrap;
+
+        }
+
+        .dashboard-table tbody tr:hover {
+
+            background: #fafcff;
+
+        }
+
+        .order-number {
+
+            color: #1677e8;
+
+            font-weight: 700;
+
+        }
+
+        .amount {
+
+            color: #172b4d;
+
+            font-weight: 700;
+
+        }
+
+        /* =====================================================
+
+           STATUS
+
+        ===================================================== */
+
+        .dashboard-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            padding: 5px 10px;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+        }
+
+        .status-pending {
+
+            background: #fff4d8;
+
+            color: #b77900;
+
+        }
+
+        .status-completed {
+
+            background: #e5f8ef;
+
+            color: #16805b;
+
+        }
+
+        .status-cancelled {
+
+            background: #ffe7e7;
+
+            color: #d14343;
+
+        }
+
+        .status-default {
+
+            background: #edf2f7;
+
+            color: #53657d;
+
+        }
+
+        /* =====================================================
+
+           STOCK
+
+        ===================================================== */
+
+        .stock-number {
+
+            font-weight: 700;
+
+        }
+
+        .stock-low {
+
+            color: #b77900;
+
+        }
+
+        .stock-out {
+
+            color: #d14343;
+
+        }
+
+        .stock-status {
+
+            display: inline-flex;
+
+            padding: 5px 10px;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+        }
+
+        .stock-status-low {
+
+            background: #fff4d8;
+
+            color: #b77900;
+
+        }
+
+        .stock-status-out {
+
+            background: #ffe7e7;
+
+            color: #d14343;
+
+        }
+
+        /* =====================================================
+
+           EMPTY STATE
+
+        ===================================================== */
+
+        .dashboard-empty {
+
+            text-align: center;
+
+            padding: 45px 20px;
+
+        }
+
+        .dashboard-empty img {
+
+            width: 48px;
+
+            height: 48px;
+
+            object-fit: contain;
+
+            margin-bottom: 12px;
+
+            opacity: 0.7;
+
+        }
+
+        .dashboard-empty-title {
+
+            color: #344563;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+        }
+
+        .dashboard-empty-text {
+
+            color: #8a97aa;
+
+            font-size: 12px;
+
+            margin-top: 5px;
+
+        }
+
+        /* =====================================================
+
+           RESPONSIVE
+
+        ===================================================== */
+
+        @media (max-width: 1200px) {
+
+            .dashboard-stats {
+
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            }
+
+            .dashboard-secondary {
+
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .dashboard-stats,
+
+            .dashboard-secondary {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .dashboard-table-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+            .dashboard-view-all {
+
+                align-self: flex-start;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- =====================================================
+
+         SIDEBAR
+
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <img src="/images/logo.png"
+
+                 class="logo-image"
+
+                 alt="StockPro">
+
+            <div>
+
+                <div class="logo-text">
+
+                    StockPro
+
+                </div>
+
+                <span class="logo-subtitle">
+
+                    Inventory &amp; Order Management
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="nav">
+
+            <!-- MAIN -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    Main
+
+                </div>
+
+
+                <!-- Dashboard -->
+
+                <a href="/"
+
+                   class="nav-link active">
+
+                    <img src="/images/dashboard.png"
+
+                         class="nav-icon"
+
+                         alt="Dashboard">
+
+                    <span>
+
+                        Dashboard
+
+                    </span>
+
+                </a>
+
+
+                <!-- Products -->
+
+                <a href="/products"
+
+                   class="nav-link">
+
+                    <img src="/images/products.png"
+
+                         class="nav-icon"
+
+                         alt="Products">
+
+                    <span>
+
+                        Products
+
+                    </span>
+
+                </a>
+
+
+                <!-- Categories -->
+
+                <a href="/categories"
+
+                   class="nav-link">
+
+                    <img src="/images/categories.png"
+
+                         class="nav-icon"
+
+                         alt="Categories">
+
+                    <span>
+
+                        Categories
+
+                    </span>
+
+                </a>
+
+
+                <!-- Suppliers -->
+
+                <a href="/suppliers"
+
+                   class="nav-link">
+
+                    <img src="/images/suppliers.png"
+
+                         class="nav-icon"
+
+                         alt="Suppliers">
+
+                    <span>
+
+                        Suppliers
+
+                    </span>
+
+                </a>
+
+
+                <!-- Customers -->
+
+                <a href="/customers"
+
+                   class="nav-link">
+
+                    <img src="/images/customers.png"
+
+                         class="nav-icon"
+
+                         alt="Customers">
+
+                    <span>
+
+                        Customers
+
+                    </span>
+
+                </a>
+
+
+                <!-- Orders -->
+
+                <a href="/orders"
+
+                   class="nav-link">
+
+                    <img src="/images/orders.png"
+
+                         class="nav-icon"
+
+                         alt="Orders">
+
+                    <span>
+
+                        Orders
+
+                    </span>
+
+                </a>
+
+
+                <!-- Inventory -->
+
+                <a href="/inventory"
+
+                   class="nav-link">
+
+                    <img src="/images/inventory.png"
+
+                         class="nav-icon"
+
+                         alt="Inventory">
+
+                    <span>
+
+                        Inventory
+
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <!-- ANALYTICS -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    Analytics
+
+                </div>
+
+
+                <!-- Sales -->
+
+                <a href="/sales"
+
+                   class="nav-link">
+
+                    <img src="/images/sales.png"
+
+                         class="nav-icon"
+
+                         alt="Sales">
+
+                    <span>
+
+                        Sales
+
+                    </span>
+
+                </a>
+
+
+                <!-- Reports -->
+
+                <a href="/reports"
+
+                   class="nav-link">
+
+                    <img src="/images/reports.png"
+
+                         class="nav-icon"
+
+                         alt="Reports">
+
+                    <span>
+
+                        Reports
+
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <!-- SYSTEM -->
+
+            <div class="nav-section">
+
+                <div class="nav-title">
+
+                    System
+
+                </div>
+
+
+                <a href="/settings"
+
+                   class="nav-link">
+
+                    <img src="/images/settings.png"
+
+                         class="nav-icon"
+
+                         alt="Settings">
+
+                    <span>
+
+                        Settings
+
+                    </span>
+
+                </a>
+
+            </div>
+
+        </nav>
+
+
+        <!-- USER -->
+
+        <div class="sidebar-footer">
+
+            <div class="user-card">
+
+                <img src="/images/avatar.png"
+
+                     class="user-avatar"
+
+                     alt="User">
+
+                <div>
+
+                    <div class="user-name">
+
+                        Dinesh
+
+                    </div>
+
+                    <div class="user-role">
+
+                        Administrator
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+
+         MAIN
+
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <!-- SEARCH -->
+
+            <div class="search-box">
+
+                <img src="/images/search.png"
+
+                     class="search-icon"
+
+                     alt="Search">
+
+					 <input type="text"
+
+					        id="globalSearch"
+
+					        placeholder="Search..."
+
+					        autocomplete="off">
+
+            </div>
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="topbar-right">
+
+
+                <!-- NOTIFICATION -->
+
+				<a href="/notifications"
+				   class="notification"
+				   aria-label="Notifications">
+
+				    <img src="/images/notification.png"
+				         alt="Notifications">
+
+				    <span class="notification-dot"
+				          id="notificationBadge"></span>
+
+				</a>
+
+
+                <!-- USER -->
+
+                <div class="top-user">
+
+                    <img src="/images/avatar.png"
+
+                         alt="User">
+
+                    <div>
+
+                        <div class="top-user-name">
+
+                            Dinesh
+
+                        </div>
+
+                        <div class="top-user-role">
+
+                            Administrator
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =====================================================
+
+             CONTENT
+
+        ====================================================== -->
+
+        <section class="content dashboard-page">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1 class="page-title">
+
+                        Dashboard
+
+                    </h1>
+
+                    <p class="page-description">
+
+                        Overview of your inventory and order management.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+
+                 PRIMARY STATISTICS
+
+            ================================================== -->
+
+            <div class="dashboard-stats">
+
+
+                <!-- PRODUCTS -->
+
+                <div class="dashboard-stat-card">
+
+                    <div class="dashboard-stat-top">
+
+                        <div>
+
+                            <div class="dashboard-stat-title">
+
+                                Total Products
+
+                            </div>
+
+                            <div class="dashboard-stat-value"
+
+                                 th:text="${totalProducts}">
+
+                                0
+
+                            </div>
+
+                            <div class="dashboard-stat-description">
+
+                                Products in system
+
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+
+                            <img src="/images/products.png"
+
+                                 alt="Products">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ORDERS -->
+
+                <div class="dashboard-stat-card">
+
+                    <div class="dashboard-stat-top">
+
+                        <div>
+
+                            <div class="dashboard-stat-title">
+
+                                Total Orders
+
+                            </div>
+
+                            <div class="dashboard-stat-value"
+
+                                 th:text="${totalOrders}">
+
+                                0
+
+                            </div>
+
+                            <div class="dashboard-stat-description">
+
+                                Orders received
+
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+
+                            <img src="/images/orders.png"
+
+                                 alt="Orders">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SALES -->
+
+                <div class="dashboard-stat-card">
+
+                    <div class="dashboard-stat-top">
+
+                        <div>
+
+                            <div class="dashboard-stat-title">
+
+                                Total Sales
+
+                            </div>
+
+                            <div class="dashboard-stat-value">
+
+                                ₹<span th:text="${totalSales}">
+
+                                    0.00
+
+                                </span>
+
+                            </div>
+
+                            <div class="dashboard-stat-description">
+
+                                Total revenue
+
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+
+                            <img src="/images/sales.png"
+
+                                 alt="Sales">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CUSTOMERS -->
+
+                <div class="dashboard-stat-card">
+
+                    <div class="dashboard-stat-top">
+
+                        <div>
+
+                            <div class="dashboard-stat-title">
+
+                                Total Customers
+
+                            </div>
+
+                            <div class="dashboard-stat-value"
+
+                                 th:text="${totalCustomers}">
+
+                                0
+
+                            </div>
+
+                            <div class="dashboard-stat-description">
+
+                                Registered customers
+
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+
+                            <img src="/images/customers.png"
+
+                                 alt="Customers">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+
+                 SECONDARY STATISTICS
+
+            ================================================== -->
+
+            <div class="dashboard-secondary">
+
+
+                <!-- SUPPLIERS -->
+
+                <div class="secondary-card">
+
+                    <div class="dashboard-stat-top">
+
+                        <div>
+
+                            <div class="dashboard-stat-title">
+
+                                Total Suppliers
+
+                            </div>
+
+                            <div class="dashboard-stat-value"
+
+                                 th:text="${totalSuppliers}">
+
+                                0
+
+                            </div>
+
+                            <div class="dashboard-stat-description">
+
+                                Active suppliers
+
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+
+                            <img src="/images/suppliers.png"
+
+                                 alt="Suppliers">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LOW STOCK -->
+
+                <div class="secondary-card">
+
+                    <div class="dashboard-stat-top">
+
+                        <div>
+
+                            <div class="dashboard-stat-title">
+
+                                Low Stock Items
+
+                            </div>
+
+                            <div class="dashboard-stat-value"
+
+                                 th:text="${lowStockItems}">
+
+                                0
+
+                            </div>
+
+                            <div class="dashboard-stat-description">
+
+                                Requires attention
+
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+
+                            <img src="/images/inventory.png"
+
+                                 alt="Low Stock">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- OUT OF STOCK -->
+
+                <div class="secondary-card">
+
+                    <div class="dashboard-stat-top">
+
+                        <div>
+
+                            <div class="dashboard-stat-title">
+
+                                Out of Stock
+
+                            </div>
+
+                            <div class="dashboard-stat-value"
+
+                                 th:text="${outOfStockItems}">
+
+                                0
+
+                            </div>
+
+                            <div class="dashboard-stat-description">
+
+                                Restock required
+
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+
+                            <img src="/images/inventory.png"
+
+                                 alt="Out of Stock">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MANAGEMENT -->
+
+                <div class="secondary-card">
+
+                    <div class="dashboard-stat-top">
+
+                        <div>
+
+                            <div class="dashboard-stat-title">
+
+                                Management
+
+                            </div>
+
+                            <div class="dashboard-stat-value">
+
+                                7
+
+                            </div>
+
+                            <div class="dashboard-stat-description">
+
+                                Available modules
+
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+
+                            <img src="/images/dashboard.png"
+
+                                 alt="Management">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+
+                 RECENT ORDERS
+
+            ================================================== -->
+
+            <div class="dashboard-table-card">
+
+
+                <div class="dashboard-table-header">
+
+                    <div>
+
+                        <h2 class="dashboard-table-title">
+
+                            Recent Orders
+
+                        </h2>
+
+                        <p class="dashboard-table-subtitle">
+
+                            Latest orders recorded in the system
+
+                        </p>
+
+                    </div>
+
+                    <a href="/orders"
+
+                       class="dashboard-view-all">
+
+                        View All
+
+                    </a>
+
+                </div>
+
+
+                <div class="dashboard-table-wrapper">
+
+                    <table class="dashboard-table">
+
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+
+                                Order ID
+
+                            </th>
+
+                            <th>
+
+                                Order Number
+
+                            </th>
+
+                            <th>
+
+                                Customer
+
+                            </th>
+
+                            <th>
+
+                                Date
+
+                            </th>
+
+                            <th>
+
+                                Total
+
+                            </th>
+
+                            <th>
+
+                                Status
+
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                        <!-- ORDERS -->
+
+						<tr th:each="order : ${recentOrders}"
+
+						    class="dashboard-search-row">
+
+                            <td th:text="${order.id}">
+
+                                1
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="order-number"
+
+                                      th:text="${order.orderNumber}">
+
+                                    ORD001
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span th:if="${order.customer != null}"
+
+                                      th:text="${order.customer.name}">
+
+                                    Customer
+
+                                </span>
+
+                                <span th:unless="${order.customer != null}">
+
+                                    Walk-in Customer
+
+                                </span>
+
+                            </td>
+
+
+                            <td th:text="${order.orderDate}">
+
+                                2026-09-26
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="amount">
+
+                                    ₹<span th:text="${order.totalAmount}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+
+                                <!-- PENDING -->
+
+                                <span class="dashboard-status status-pending"
+
+                                      th:if="${order.status != null and #strings.equalsIgnoreCase(order.status, 'Pending')}"
+
+                                      th:text="${order.status}">
+
+                                    Pending
+
+                                </span>
+
+
+                                <!-- COMPLETED -->
+
+                                <span class="dashboard-status status-completed"
+
+                                      th:if="${order.status != null and #strings.equalsIgnoreCase(order.status, 'Completed')}"
+
+                                      th:text="${order.status}">
+
+                                    Completed
+
+                                </span>
+
+
+                                <!-- CANCELLED -->
+
+                                <span class="dashboard-status status-cancelled"
+
+                                      th:if="${order.status != null and #strings.equalsIgnoreCase(order.status, 'Cancelled')}"
+
+                                      th:text="${order.status}">
+
+                                    Cancelled
+
+                                </span>
+
+
+                                <!-- OTHER STATUS -->
+
+                                <span class="dashboard-status status-default"
+
+                                      th:if="${order.status == null or
+
+                                              (!#strings.equalsIgnoreCase(order.status, 'Pending')
+
+                                              and !#strings.equalsIgnoreCase(order.status, 'Completed')
+
+                                              and !#strings.equalsIgnoreCase(order.status, 'Cancelled'))}"
+
+                                      th:text="${order.status != null ? order.status : 'Unknown'}">
+
+                                    Unknown
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- EMPTY -->
+
+                        <tr th:if="${recentOrders == null or #lists.isEmpty(recentOrders)}">
+
+                            <td colspan="6">
+
+                                <div class="dashboard-empty">
+
+                                    <img src="/images/orders.png"
+
+                                         alt="No Orders">
+
+                                    <div class="dashboard-empty-title">
+
+                                        No recent orders
+
+                                    </div>
+
+                                    <div class="dashboard-empty-text">
+
+                                        Orders will appear here when customers place them.
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+
+                 LOW STOCK PRODUCTS
+
+            ================================================== -->
+
+            <div class="dashboard-table-card">
+
+
+                <div class="dashboard-table-header">
+
+                    <div>
+
+                        <h2 class="dashboard-table-title">
+
+                            Low Stock Products
+
+                        </h2>
+
+                        <p class="dashboard-table-subtitle">
+
+                            Products that require inventory attention
+
+                        </p>
+
+                    </div>
+
+                    <a href="/inventory"
+
+                       class="dashboard-view-all">
+
+                        View Inventory
+
+                    </a>
+
+                </div>
+
+
+                <div class="dashboard-table-wrapper">
+
+                    <table class="dashboard-table">
+
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+
+                                Product
+
+                            </th>
+
+                            <th>
+
+                                SKU
+
+                            </th>
+
+                            <th>
+
+                                Stock
+
+                            </th>
+
+                            <th>
+
+                                Status
+
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                        <!-- LOW STOCK PRODUCTS -->
+
+                        <tr th:each="product : ${products}"
+
+                            th:if="${product.stockQuantity != null and product.stockQuantity <= 10}"
+
+                            class="dashboard-search-row">
+
+
+                            <td th:text="${product.name}">
+
+                                Product
+
+                            </td>
+
+
+                            <td th:text="${product.sku}">
+
+                                SKU001
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="stock-number"
+
+                                      th:classappend="${product.stockQuantity == 0 ? ' stock-out' : ' stock-low'}"
+
+                                      th:text="${product.stockQuantity}">
+
+                                    0
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+
+                                <!-- LOW STOCK -->
+
+                                <span class="stock-status stock-status-low"
+
+                                      th:if="${product.stockQuantity != null and product.stockQuantity > 0}">
+
+                                    Low Stock
+
+                                </span>
+
+
+                                <!-- OUT OF STOCK -->
+
+                                <span class="stock-status stock-status-out"
+
+                                      th:if="${product.stockQuantity != null and product.stockQuantity == 0}">
+
+                                    Out of Stock
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- EMPTY -->
+
+                        <tr th:if="${products == null or #lists.isEmpty(products)}">
+
+                            <td colspan="4">
+
+                                <div class="dashboard-empty">
+
+                                    <img src="/images/inventory.png"
+
+                                         alt="Inventory">
+
+                                    <div class="dashboard-empty-title">
+
+                                        No inventory data
+
+                                    </div>
+
+                                    <div class="dashboard-empty-text">
+
+                                        Product stock information will appear here.
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchInput =
+
+            document.getElementById("globalSearch");
+
+        const searchRows =
+
+            document.querySelectorAll(".dashboard-search-row");
+
+        if (!searchInput) {
+
+            return;
+
+        }
+
+        searchInput.addEventListener("input", function () {
+
+            const searchValue =
+
+                this.value.toLowerCase().trim();
+
+            searchRows.forEach(function (row) {
+
+                const rowText =
+
+                    row.textContent.toLowerCase();
+
+                if (
+
+                    searchValue === "" ||
+
+                    rowText.includes(searchValue)
+
+                ) {
+
+                    row.style.display = "";
+
+                } else {
+
+                    row.style.display = "none";
+
+                }
+
+            });
+
+        });
+
+    });
+
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const badge =
+        document.getElementById("notificationBadge");
+
+    if (!badge) {
+        return;
+    }
+
+    function updateNotificationBadge() {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem("stockProSettings") || "null"
+            ) || {};
+
+        if (saved.notificationsEnabled === false) {
+            badge.style.display = "none";
+            return;
+        }
+
+        const threshold =
+            Math.max(
+                1,
+                Math.min(
+                    100,
+                    Number(saved.lowStockThreshold) || 10
+                )
+            );
+
+        fetch("/notifications", {
+            method: "GET",
+            cache: "no-store"
+        })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("Unable to load notifications");
+            }
+            return response.text();
+        })
+        .then(function (html) {
+
+            const parser = new DOMParser();
+
+            const notificationPage =
+                parser.parseFromString(html, "text/html");
+
+            let notificationCount = 0;
+
+            const stockAlerts =
+                notificationPage.querySelectorAll(".stock-alert");
+
+            stockAlerts.forEach(function (item) {
+
+                const stock =
+                    Number(
+                        item.getAttribute("data-stock")
+                    ) || 0;
+
+                if (
+                    stock === 0 ||
+                    (stock > 0 && stock <= threshold)
+                ) {
+                    notificationCount++;
+                }
+            });
+
+            const pendingOrders =
+                notificationPage.querySelectorAll(
+                    ".pending-order-alert"
+                );
+
+            notificationCount += pendingOrders.length;
+
+            if (notificationCount > 0) {
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+
+        })
+        .catch(function (error) {
+
+            console.error(
+                "Notification badge error:",
+                error
+            );
+
+            badge.style.display = "none";
+        });
+    }
+
+    updateNotificationBadge();
+
+    setInterval(
+        updateNotificationBadge,
+        30000
+    );
+
+});
+</script>
+
+</body>
+
+</html>
